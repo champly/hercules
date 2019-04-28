@@ -1,10 +1,11 @@
 package component
 
-import (
-	"github.com/champly/hercules/context"
-)
-
 type IComponent interface {
-	Handle(c *context.Context) interface{}
+	GetRouter() []Router
 	Close() error
+}
+
+type Router struct {
+	Name   string
+	Handle interface{}
 }

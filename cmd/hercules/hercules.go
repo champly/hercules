@@ -1,20 +1,22 @@
 package hercules
 
 import (
+	"fmt"
 	"net/http"
 
+	"github.com/champly/hercules/component"
 	"github.com/gin-gonic/gin"
 )
 
 type Hercules struct {
 	*option
-	server  *http.Server
-	engine  *gin.Engine
-	routers []Router
+	server *http.Server
+	engine *gin.Engine
+	component.IServiceRegistry
 }
 
 func New(opts ...Option) *Hercules {
-	h := &Hercules{option: &option{Mode: "debug"}, routers: []Router{}}
+	h := &Hercules{option: &option{Mode: "debug"}, IServiceRegistry: component.NewServiceRegistry()}
 	for _, opt := range opts {
 		opt(h.option)
 	}
@@ -22,21 +24,35 @@ func New(opts ...Option) *Hercules {
 	h.server = &http.Server{
 		Addr: h.Addr,
 	}
-
-	// h.server.Handler = getHandler(h.Mode, h.routers)
+	h.server.Handler = h.getHandler(h.Mode)
 	return h
 }
 
-func getHandler(mode string, routes []Router) http.Handler {
+func (h *Hercules) getHandler(mode string) http.Handler {
 	gin.SetMode(mode)
 	engine := gin.New()
-	for _, r := range routes {
-		engine.Any(r.pattern, errHandleFunc(r.handle))
-	}
+	engine.Any("/*name", h.GeneralHandler())
 	return engine
 }
 
+func (h *Hercules) GeneralHandler() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		hh := h.GetRouter(ctx.Request.URL.String())
+		if hh == nil {
+			ctx.Status(http.StatusNotFound)
+			return
+		}
+		handler, ok := hh.(func(*gin.Context) error)
+		if !ok {
+			ctx.Status(http.StatusInternalServerError)
+			return
+		}
+		if err := handler(ctx); err != nil {
+			fmt.Println(err)
+		}
+	}
+}
+
 func (h *Hercules) Start() {
-	h.server.Handler = getHandler(h.Mode, h.routers)
 	h.server.ListenAndServe()
 }
