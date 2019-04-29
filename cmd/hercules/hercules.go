@@ -33,7 +33,7 @@ func New(opts ...Option) *Hercules {
 func (h *Hercules) getHandler(mode string) http.Handler {
 	gin.SetMode(mode)
 	engine := gin.New()
-	engine.Any("/*name", h.GeneralHandler())
+	engine.Any("/*router", h.GeneralHandler())
 	return engine
 }
 
