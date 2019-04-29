@@ -82,7 +82,6 @@ func (s *ServiceRegistry) API(pattern string, r interface{}) {
 func (s *ServiceRegistry) GetRouters() []Router {
 	r := []Router{}
 	for p, ss := range s.services {
-		// r = append(r, Router{n, h})
 		for m, h := range ss {
 			r = append(r, Router{p, m, h})
 		}
