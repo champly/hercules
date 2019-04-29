@@ -3,8 +3,10 @@ package hercules
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/champly/hercules/component"
+	"github.com/champly/hercules/context"
 	"github.com/gin-gonic/gin"
 )
 
@@ -36,15 +38,16 @@ func (h *Hercules) getHandler(mode string) http.Handler {
 }
 
 func (h *Hercules) GeneralHandler() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		hh := h.GetRouter(ctx.Request.URL.String())
+	return func(c *gin.Context) {
+		hh := h.GetRouter(c.Request.URL.String(), strings.ToLower(c.Request.Method))
 		if hh == nil {
-			ctx.Status(http.StatusNotFound)
+			c.Status(http.StatusNotFound)
 			return
 		}
-		handler, ok := hh.(func(*gin.Context) error)
+		ctx := context.GetContext(c)
+		handler, ok := hh.(func(*context.Context) error)
 		if !ok {
-			ctx.Status(http.StatusInternalServerError)
+			c.Status(http.StatusInternalServerError)
 			return
 		}
 		if err := handler(ctx); err != nil {
