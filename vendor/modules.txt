@@ -9,12 +9,16 @@ github.com/gin-gonic/gin/render
 github.com/golang/protobuf/proto
 # github.com/json-iterator/go v1.1.6
 github.com/json-iterator/go
+# github.com/konsorten/go-windows-terminal-sequences v1.0.1
+github.com/konsorten/go-windows-terminal-sequences
 # github.com/mattn/go-isatty v0.0.7
 github.com/mattn/go-isatty
 # github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd
 github.com/modern-go/concurrent
 # github.com/modern-go/reflect2 v1.0.1
 github.com/modern-go/reflect2
+# github.com/sirupsen/logrus v1.4.1
+github.com/sirupsen/logrus
 # github.com/ugorji/go v1.1.4
 github.com/ugorji/go/codec
 # golang.org/x/sys v0.0.0-20190222072716-a9d3bda3a223
