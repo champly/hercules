@@ -10,6 +10,7 @@ type Context struct {
 	// Request  *Request
 	// Response *Response
 	*gin.Context
+	Log ILog
 }
 
 var contextPool *sync.Pool
@@ -25,5 +26,6 @@ func init() {
 func GetContext(c *gin.Context) *Context {
 	ctx := contextPool.Get().(*Context)
 	ctx.Context = c
+	ctx.Log = NewLogger()
 	return ctx
 }
