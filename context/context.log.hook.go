@@ -45,6 +45,7 @@ func (f *FileSplitHook) getStdOut(t string) io.Writer {
 	}
 
 	fp, _ = os.OpenFile(fmt.Sprintf("%s.log", t), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
-	f.out[t] = fp
-	return fp
+	iw := io.MultiWriter(os.Stdout, fp)
+	f.out[t] = iw
+	return iw
 }

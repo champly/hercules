@@ -1,7 +1,6 @@
 package context
 
 import (
-	"os"
 	"sync"
 
 	"github.com/sirupsen/logrus"
@@ -56,7 +55,6 @@ func newLogger() *logrus.Logger {
 		return logger
 	}
 	logger = &logrus.Logger{
-		Out: os.Stdout,
 		Formatter: &logrus.JSONFormatter{
 			TimestampFormat: "2006-01-02 15:04:05",
 		},
