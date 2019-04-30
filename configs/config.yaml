@@ -1,0 +1,6 @@
+platname:
+    test
+system-name:
+    test_system
+logger:
+    level: "debug"
