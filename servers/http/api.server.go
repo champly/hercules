@@ -32,9 +32,6 @@ func NewApiServer(sConf *configs.ServerConfig, routers []configs.Router) (*ApiSe
 
 func (a *ApiServer) getRouter(routers []configs.Router) error {
 	for _, r := range routers {
-		// if _, ok := a.services[r.Name]; ok {
-		// return fmt.Errorf("router:%s repeat register", r.Name)
-		// }
 		for _, m := range strings.Split(r.Method, "|") {
 			if _, ok := a.services[r.Name]; !ok {
 				a.services[r.Name] = map[string]interface{}{}

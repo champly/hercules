@@ -27,6 +27,7 @@ type ServiceRegistry struct {
 func NewServiceRegistry() *ServiceRegistry {
 	return &ServiceRegistry{services: make(map[string][]configs.Router)}
 }
+
 func (s *ServiceRegistry) API(pattern string, r interface{}) {
 	constructor, ok := r.(func(c IContainer) interface{})
 	if !ok {
