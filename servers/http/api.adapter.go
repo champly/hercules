@@ -7,7 +7,7 @@ import (
 
 type apiServerAdapter struct{}
 
-func (a *apiServerAdapter) Resolve(sConf *configs.ServerConfig, router map[string]map[string]interface{}) (servers.IServers, error) {
+func (a *apiServerAdapter) Resolve(sConf *configs.ServerConfig, router []configs.Router) (servers.IServers, error) {
 	return NewApiServer(sConf, router)
 }
 

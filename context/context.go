@@ -30,6 +30,12 @@ func GetContext(c *gin.Context) *Context {
 	return ctx
 }
 
+func GetDContext() *Context {
+	ctx := contextPool.Get().(*Context)
+	ctx.Log = NewLogger()
+	return ctx
+}
+
 func (c *Context) Close() {
 	contextPool.Put(c)
 }

@@ -10,4 +10,10 @@ const (
 	HttpMethodDelete  = "DELETE"
 	HttpMethodConnect = "CONNECT"
 	HttpMethodTrace   = "TRACE"
+	HttpMethodALL     = "GET|POST|PUT|PATCH|HEAD|OPTIONS|DELETE|CONNECT|TRACE"
+)
+
+const (
+	ServerTypeAPI  = "api"
+	ServerTypeCron = "cron"
 )

@@ -1,6 +1,7 @@
 package http
 
 import (
+	ctxs "context"
 	"fmt"
 	"net/http"
 	"strings"
@@ -17,13 +18,32 @@ type ApiServer struct {
 	engine   *gin.Engine
 }
 
-func NewApiServer(sConf *configs.ServerConfig, services map[string]map[string]interface{}) (*ApiServer, error) {
-	a := &ApiServer{ServerConfig: sConf, services: services}
+func NewApiServer(sConf *configs.ServerConfig, routers []configs.Router) (*ApiServer, error) {
+	a := &ApiServer{ServerConfig: sConf, services: make(map[string]map[string]interface{})}
 	a.server = &http.Server{
 		Addr: a.Addr,
 	}
 	a.server.Handler = a.getHandler(a.Mode)
+	if err := a.getRouter(routers); err != nil {
+		return nil, err
+	}
 	return a, nil
+}
+
+func (a *ApiServer) getRouter(routers []configs.Router) error {
+	for _, r := range routers {
+		// if _, ok := a.services[r.Name]; ok {
+		// return fmt.Errorf("router:%s repeat register", r.Name)
+		// }
+		for _, m := range strings.Split(r.Method, "|") {
+			if _, ok := a.services[r.Name]; !ok {
+				a.services[r.Name] = map[string]interface{}{}
+				a.services[r.Name][m] = r.Handler
+
+			}
+		}
+	}
+	return nil
 }
 
 func (a *ApiServer) getHandler(mode string) http.Handler {
@@ -63,11 +83,13 @@ func (a *ApiServer) GetRouter(router string, method string) interface{} {
 }
 
 func (a *ApiServer) Start() error {
-	return a.server.ListenAndServe()
+	go a.server.ListenAndServe()
+	return nil
 }
 
 func (a *ApiServer) ShutDown() {
-	fmt.Println("shutdown")
+	a.server.Shutdown(ctxs.TODO())
+	fmt.Println("http shutdown")
 }
 
 func (a *ApiServer) Restart() {
