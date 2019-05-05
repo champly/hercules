@@ -47,10 +47,18 @@ func (s *ServiceRegistry) API(pattern string, r interface{}) {
 			if !ok {
 				panic(t.Method(i).Name + " is not func(*context.Context) error method")
 			}
-			s.services[pattern]["get"] = h
-			s.services[pattern]["post"] = h
-			s.services[pattern]["put"] = h
-			s.services[pattern]["delete"] = h
+			if _, ok := s.services[pattern]["get"]; !ok {
+				s.services[pattern]["get"] = h
+			}
+			if _, ok := s.services[pattern]["post"]; !ok {
+				s.services[pattern]["post"] = h
+			}
+			if _, ok := s.services[pattern]["put"]; !ok {
+				s.services[pattern]["put"] = h
+			}
+			if _, ok := s.services[pattern]["delete"]; !ok {
+				s.services[pattern]["delete"] = h
+			}
 		case "GetHandler":
 			h, ok := v.Method(i).Interface().(func(*context.Context) error)
 			if !ok {
