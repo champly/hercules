@@ -29,3 +29,7 @@ func GetContext(c *gin.Context) *Context {
 	ctx.Log = NewLogger()
 	return ctx
 }
+
+func (c *Context) Close() {
+	contextPool.Put(c)
+}

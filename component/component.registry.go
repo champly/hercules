@@ -3,6 +3,7 @@ package component
 import (
 	"reflect"
 
+	"github.com/champly/hercules/configs"
 	"github.com/champly/hercules/context"
 )
 
@@ -14,8 +15,7 @@ type Router struct {
 
 type IServiceRegistry interface {
 	API(pattern string, handle interface{})
-	GetRouter(router string, method string) interface{}
-	GetRouters() []Router
+	GetRouters() map[string]map[string]interface{}
 }
 
 type ServiceRegistry struct {
@@ -23,7 +23,7 @@ type ServiceRegistry struct {
 }
 
 func NewServiceRegistry() *ServiceRegistry {
-	return &ServiceRegistry{services: map[string]map[string]interface{}{}}
+	return &ServiceRegistry{services: make(map[string]map[string]interface{})}
 }
 
 func (s *ServiceRegistry) API(pattern string, r interface{}) {
@@ -47,60 +47,46 @@ func (s *ServiceRegistry) API(pattern string, r interface{}) {
 			if !ok {
 				panic(t.Method(i).Name + " is not func(*context.Context) error method")
 			}
-			if _, ok := s.services[pattern]["get"]; !ok {
-				s.services[pattern]["get"] = h
+			if _, ok := s.services[pattern][configs.HttpMethodGet]; !ok {
+				s.services[pattern][configs.HttpMethodGet] = h
 			}
-			if _, ok := s.services[pattern]["post"]; !ok {
-				s.services[pattern]["post"] = h
+			if _, ok := s.services[pattern][configs.HttpMethodPost]; !ok {
+				s.services[pattern][configs.HttpMethodPost] = h
 			}
-			if _, ok := s.services[pattern]["put"]; !ok {
-				s.services[pattern]["put"] = h
+			if _, ok := s.services[pattern][configs.HttpMethodPut]; !ok {
+				s.services[pattern][configs.HttpMethodPut] = h
 			}
-			if _, ok := s.services[pattern]["delete"]; !ok {
-				s.services[pattern]["delete"] = h
+			if _, ok := s.services[pattern][configs.HttpMethodDelete]; !ok {
+				s.services[pattern][configs.HttpMethodDelete] = h
 			}
 		case "GetHandler":
 			h, ok := v.Method(i).Interface().(func(*context.Context) error)
 			if !ok {
 				panic(t.Method(i).Name + " is not func(*context.Context) error method")
 			}
-			s.services[pattern]["get"] = h
+			s.services[pattern][configs.HttpMethodGet] = h
 		case "PostHandler":
 			h, ok := v.Method(i).Interface().(func(*context.Context) error)
 			if !ok {
 				panic(t.Method(i).Name + " is not func(*context.Context) error method")
 			}
-			s.services[pattern]["post"] = h
+			s.services[pattern][configs.HttpMethodPost] = h
 		case "PutHandler":
 			h, ok := v.Method(i).Interface().(func(*context.Context) error)
 			if !ok {
 				panic(t.Method(i).Name + " is not func(*context.Context) error method")
 			}
-			s.services[pattern]["put"] = h
+			s.services[pattern][configs.HttpMethodPut] = h
 		case "DeleteHandler":
 			h, ok := v.Method(i).Interface().(func(*context.Context) error)
 			if !ok {
 				panic(t.Method(i).Name + " is not func(*context.Context) error method")
 			}
-			s.services[pattern]["delete"] = h
+			s.services[pattern][configs.HttpMethodDelete] = h
 		}
 	}
 }
 
-func (s *ServiceRegistry) GetRouters() []Router {
-	r := []Router{}
-	for p, ss := range s.services {
-		for m, h := range ss {
-			r = append(r, Router{p, m, h})
-		}
-	}
-	return r
-}
-
-func (s *ServiceRegistry) GetRouter(router string, method string) interface{} {
-	r, ok := s.services[router]
-	if !ok {
-		return nil
-	}
-	return r[method]
+func (s *ServiceRegistry) GetRouters() map[string]map[string]interface{} {
+	return s.services
 }

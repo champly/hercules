@@ -1,23 +1,8 @@
 package configs
 
-type Plat struct {
-	Name string
-}
-
-type System struct {
-	Name       string
-	ServerType string
-}
-
-type Registry struct {
-	Addr      string
-	IsLocal   string
-	LocalAddr string
-}
-
-type Logger struct {
-	Level string
-	Out   []string
-	Local string
-	Addr  string
+type ServerConfig struct {
+	PlatName   string `json:"plat_name"`
+	SystemName string `json:"system_name"`
+	Addr       string `json:"addr"`
+	Mode       string `json:"mode"`
 }
