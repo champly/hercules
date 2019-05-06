@@ -35,9 +35,8 @@ func (a *ApiServer) getRouter(routers []configs.Router) error {
 		for _, m := range strings.Split(r.Method, "|") {
 			if _, ok := a.services[r.Name]; !ok {
 				a.services[r.Name] = map[string]configs.ExecHandler{}
-				a.services[r.Name][m] = r.Handler
-
 			}
+			a.services[r.Name][m] = r.Handler
 		}
 	}
 	return nil
@@ -46,6 +45,10 @@ func (a *ApiServer) getRouter(routers []configs.Router) error {
 func (a *ApiServer) getHandler(mode string) http.Handler {
 	gin.SetMode(mode)
 	engine := gin.New()
+	if mode == "debug" {
+		engine.Use(gin.Logger())
+	}
+	engine.Use(gin.Recovery())
 	engine.Any("/*router", a.GeneralHandler())
 	return engine
 }
