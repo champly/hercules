@@ -26,7 +26,7 @@ func (c *CronServer) AddFunc() {
 	for _, t := range c.routers {
 		c.server.AddFunc(t.Cron, func() {
 			ctx := ctxs.GetDContext()
-			defer ctx.Close()
+			defer ctx.Put()
 			if err := t.Handler(ctx); err != nil {
 				fmt.Println(err)
 			}

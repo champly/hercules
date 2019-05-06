@@ -38,6 +38,6 @@ func GetDContext() *Context {
 	return ctx
 }
 
-func (c *Context) Close() {
+func (c *Context) Put() {
 	contextPool.Put(c)
 }

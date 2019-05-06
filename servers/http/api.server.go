@@ -55,13 +55,23 @@ func (a *ApiServer) getHandler(mode string) http.Handler {
 
 func (a *ApiServer) GeneralHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		c.Writer.Header().Add("Access-Control-Allow-Origin", "http://localhost:8081")
+		c.Writer.Header().Add("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Add("Access-Control-Allow-Headers", "__jwt__")
+		c.Writer.Header().Add("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,PATCH,OPTIONS")
+		c.Writer.Header().Add("Access-Control-Expose-Headers", "__jwt__")
+
+		if strings.EqualFold(c.Request.Method, configs.HttpMethodOptions) {
+			return
+		}
+
 		handler := a.GetRouter(c.Request.URL.String(), c.Request.Method)
 		if handler == nil {
 			c.Status(http.StatusNotFound)
 			return
 		}
 		ctx := ctxs.GetContext(c)
-		defer ctx.Close()
+		defer ctx.Put()
 
 		if err := handler(ctx); err != nil {
 			fmt.Println(err)
