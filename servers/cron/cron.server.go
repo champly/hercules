@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/champly/hercules/configs"
-	"github.com/champly/hercules/context"
+	"github.com/champly/hercules/ctxs"
 	"github.com/robfig/cron"
 )
 
@@ -25,7 +25,7 @@ func NewCronServer(sConf *configs.ServerConfig, routers []configs.Router) (*Cron
 func (c *CronServer) AddFunc() {
 	for _, t := range c.routers {
 		c.server.AddFunc(t.Cron, func() {
-			ctx := context.GetDContext()
+			ctx := ctxs.GetDContext()
 			defer ctx.Close()
 			if err := t.Handler(ctx); err != nil {
 				fmt.Println(err)

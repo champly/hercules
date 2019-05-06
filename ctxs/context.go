@@ -1,10 +1,12 @@
-package context
+package ctxs
 
 import (
 	"sync"
 
 	"github.com/gin-gonic/gin"
 )
+
+type Handler func(*Context) error
 
 type Context struct {
 	// Request  *Request

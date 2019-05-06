@@ -1,25 +1,25 @@
 package http
 
 import (
-	ctxs "context"
+	"context"
 	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/champly/hercules/configs"
-	"github.com/champly/hercules/context"
+	"github.com/champly/hercules/ctxs"
 	"github.com/gin-gonic/gin"
 )
 
 type ApiServer struct {
 	*configs.ServerConfig
-	services map[string]map[string]configs.ExecHandler
+	services map[string]map[string]ctxs.Handler
 	server   *http.Server
 	engine   *gin.Engine
 }
 
 func NewApiServer(sConf *configs.ServerConfig, routers []configs.Router) (*ApiServer, error) {
-	a := &ApiServer{ServerConfig: sConf, services: make(map[string]map[string]configs.ExecHandler)}
+	a := &ApiServer{ServerConfig: sConf, services: make(map[string]map[string]ctxs.Handler)}
 	a.server = &http.Server{
 		Addr: a.Addr,
 	}
@@ -34,7 +34,7 @@ func (a *ApiServer) getRouter(routers []configs.Router) error {
 	for _, r := range routers {
 		for _, m := range strings.Split(r.Method, "|") {
 			if _, ok := a.services[r.Name]; !ok {
-				a.services[r.Name] = map[string]configs.ExecHandler{}
+				a.services[r.Name] = map[string]ctxs.Handler{}
 			}
 			a.services[r.Name][m] = r.Handler
 		}
@@ -60,16 +60,17 @@ func (a *ApiServer) GeneralHandler() gin.HandlerFunc {
 			c.Status(http.StatusNotFound)
 			return
 		}
-		ctx := context.GetContext(c)
+		ctx := ctxs.GetContext(c)
 		defer ctx.Close()
 
 		if err := handler(ctx); err != nil {
 			fmt.Println(err)
 		}
+		return
 	}
 }
 
-func (a *ApiServer) GetRouter(router string, method string) configs.ExecHandler {
+func (a *ApiServer) GetRouter(router string, method string) ctxs.Handler {
 	method = strings.ToUpper(method)
 	r, ok := a.services[router]
 	if !ok {
@@ -84,7 +85,7 @@ func (a *ApiServer) Start() error {
 }
 
 func (a *ApiServer) ShutDown() {
-	a.server.Shutdown(ctxs.TODO())
+	a.server.Shutdown(context.TODO())
 	fmt.Println("http shutdown")
 }
 

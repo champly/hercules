@@ -1,7 +1,7 @@
 package component
 
 import (
-	"github.com/champly/hercules/context"
+	"github.com/champly/hercules/ctxs"
 )
 
 type IComponent interface {
@@ -10,21 +10,21 @@ type IComponent interface {
 }
 
 type IHandler interface {
-	Handler(ctx *context.Context) error
+	Handler(ctx *ctxs.Context) error
 }
 
 type IGetHandler interface {
-	GetHandler(ctx *context.Context) error
+	GetHandler(ctx *ctxs.Context) error
 }
 
 type IPostHandler interface {
-	PostHandler(ctx *context.Context) error
+	PostHandler(ctx *ctxs.Context) error
 }
 
 type IPutHandler interface {
-	PutHandler(ctx *context.Context) error
+	PutHandler(ctx *ctxs.Context) error
 }
 
 type IDeleteHandler interface {
-	DeleteHandler(ctx *context.Context) error
+	DeleteHandler(ctx *ctxs.Context) error
 }

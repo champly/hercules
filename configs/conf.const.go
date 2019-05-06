@@ -1,7 +1,5 @@
 package configs
 
-import "github.com/champly/hercules/context"
-
 const (
 	HttpMethodGet     = "GET"
 	HttpMethodPost    = "POST"
@@ -19,5 +17,3 @@ const (
 	ServerTypeAPI  = "api"
 	ServerTypeCron = "cron"
 )
-
-type ExecHandler func(*context.Context) error

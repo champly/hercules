@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/champly/hercules/configs"
-	"github.com/champly/hercules/context"
+	"github.com/champly/hercules/ctxs"
 )
 
 type Router struct {
@@ -46,33 +46,33 @@ func (s *ServiceRegistry) API(pattern string, r interface{}) {
 	for i := 0; i < t.NumMethod(); i++ {
 		switch t.Method(i).Name {
 		case "Handler":
-			h, ok := v.Method(i).Interface().(func(*context.Context) error)
+			h, ok := v.Method(i).Interface().(func(*ctxs.Context) error)
 			if !ok {
-				panic(t.Method(i).Name + " is not func(*context.Context) error method")
+				panic(t.Method(i).Name + " is not func(*ctxs.Context) error method")
 			}
 			routers = append(routers, configs.Router{Name: pattern, Method: configs.HttpMethodALL, Handler: h})
 		case "GetHandler":
-			h, ok := v.Method(i).Interface().(func(*context.Context) error)
+			h, ok := v.Method(i).Interface().(func(*ctxs.Context) error)
 			if !ok {
-				panic(t.Method(i).Name + " is not func(*context.Context) error method")
+				panic(t.Method(i).Name + " is not func(*ctxs.Context) error method")
 			}
 			routers = append(routers, configs.Router{Name: pattern, Method: configs.HttpMethodGet, Handler: h})
 		case "PostHandler":
-			h, ok := v.Method(i).Interface().(func(*context.Context) error)
+			h, ok := v.Method(i).Interface().(func(*ctxs.Context) error)
 			if !ok {
-				panic(t.Method(i).Name + " is not func(*context.Context) error method")
+				panic(t.Method(i).Name + " is not func(*ctxs.Context) error method")
 			}
 			routers = append(routers, configs.Router{Name: pattern, Method: configs.HttpMethodPost, Handler: h})
 		case "PutHandler":
-			h, ok := v.Method(i).Interface().(func(*context.Context) error)
+			h, ok := v.Method(i).Interface().(func(*ctxs.Context) error)
 			if !ok {
-				panic(t.Method(i).Name + " is not func(*context.Context) error method")
+				panic(t.Method(i).Name + " is not func(*ctxs.Context) error method")
 			}
 			routers = append(routers, configs.Router{Name: pattern, Method: configs.HttpMethodPut, Handler: h})
 		case "DeleteHandler":
-			h, ok := v.Method(i).Interface().(func(*context.Context) error)
+			h, ok := v.Method(i).Interface().(func(*ctxs.Context) error)
 			if !ok {
-				panic(t.Method(i).Name + " is not func(*context.Context) error method")
+				panic(t.Method(i).Name + " is not func(*ctxs.Context) error method")
 			}
 			routers = append(routers, configs.Router{Name: pattern, Method: configs.HttpMethodDelete, Handler: h})
 		}
@@ -97,9 +97,9 @@ func (s *ServiceRegistry) Cron(sn string, tn string, r interface{}) {
 	t := reflect.TypeOf(constrObj)
 	for i := 0; i < t.NumMethod(); i++ {
 		if strings.EqualFold(t.Method(i).Name, "Handler") {
-			h, ok := v.Method(i).Interface().(func(*context.Context) error)
+			h, ok := v.Method(i).Interface().(func(*ctxs.Context) error)
 			if !ok {
-				panic(t.Method(i).Name + " is not func(*context.Context) error method")
+				panic(t.Method(i).Name + " is not func(*ctxs.Context) error method")
 			}
 			routers = append(routers, configs.Router{Name: sn, Cron: tn, Handler: h})
 			break
