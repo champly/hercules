@@ -80,7 +80,11 @@ func (a *ApiServer) GetRouter(router string, method string) ctxs.Handler {
 }
 
 func (a *ApiServer) Start() error {
-	go a.server.ListenAndServe()
+	go func() {
+		if err := a.server.ListenAndServe(); err != nil {
+			fmt.Println(err)
+		}
+	}()
 	return nil
 }
 
