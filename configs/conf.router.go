@@ -5,5 +5,5 @@ type Router struct {
 	Method  string
 	Cron    string
 	Args    map[string]string
-	Handler interface{}
+	Handler ExecHandler
 }

@@ -13,13 +13,13 @@ import (
 
 type ApiServer struct {
 	*configs.ServerConfig
-	services map[string]map[string]interface{}
+	services map[string]map[string]configs.ExecHandler
 	server   *http.Server
 	engine   *gin.Engine
 }
 
 func NewApiServer(sConf *configs.ServerConfig, routers []configs.Router) (*ApiServer, error) {
-	a := &ApiServer{ServerConfig: sConf, services: make(map[string]map[string]interface{})}
+	a := &ApiServer{ServerConfig: sConf, services: make(map[string]map[string]configs.ExecHandler)}
 	a.server = &http.Server{
 		Addr: a.Addr,
 	}
@@ -34,7 +34,7 @@ func (a *ApiServer) getRouter(routers []configs.Router) error {
 	for _, r := range routers {
 		for _, m := range strings.Split(r.Method, "|") {
 			if _, ok := a.services[r.Name]; !ok {
-				a.services[r.Name] = map[string]interface{}{}
+				a.services[r.Name] = map[string]configs.ExecHandler{}
 				a.services[r.Name][m] = r.Handler
 
 			}
@@ -52,25 +52,21 @@ func (a *ApiServer) getHandler(mode string) http.Handler {
 
 func (a *ApiServer) GeneralHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		hh := a.GetRouter(c.Request.URL.String(), c.Request.Method)
-		if hh == nil {
+		handler := a.GetRouter(c.Request.URL.String(), c.Request.Method)
+		if handler == nil {
 			c.Status(http.StatusNotFound)
 			return
 		}
 		ctx := context.GetContext(c)
 		defer ctx.Close()
-		handler, ok := hh.(func(*context.Context) error)
-		if !ok {
-			c.Status(http.StatusInternalServerError)
-			return
-		}
+
 		if err := handler(ctx); err != nil {
 			fmt.Println(err)
 		}
 	}
 }
 
-func (a *ApiServer) GetRouter(router string, method string) interface{} {
+func (a *ApiServer) GetRouter(router string, method string) configs.ExecHandler {
 	method = strings.ToUpper(method)
 	r, ok := a.services[router]
 	if !ok {

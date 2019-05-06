@@ -12,22 +12,22 @@ type CronServer struct {
 	*configs.ServerConfig
 	server   *cron.Cron
 	schedule cron.Schedule
+	routers  []configs.Router
 }
 
 func NewCronServer(sConf *configs.ServerConfig, routers []configs.Router) (*CronServer, error) {
-	c := &CronServer{ServerConfig: sConf}
+	c := &CronServer{ServerConfig: sConf, routers: routers}
 	c.server = cron.New()
-	c.AddFunc(routers)
+	c.AddFunc()
 	return c, nil
 }
 
-func (c *CronServer) AddFunc(routers []configs.Router) {
-	for _, t := range routers {
+func (c *CronServer) AddFunc() {
+	for _, t := range c.routers {
 		c.server.AddFunc(t.Cron, func() {
 			ctx := context.GetDContext()
 			defer ctx.Close()
-			handler, _ := t.Handler.(func(*context.Context) error)
-			if err := handler(ctx); err != nil {
+			if err := t.Handler(ctx); err != nil {
 				fmt.Println(err)
 			}
 		})
