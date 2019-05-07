@@ -38,10 +38,9 @@ var (
 )
 
 func NewLogger() *Logger {
-	log := &Logger{newLogger()}
-	log.l.AddHook(NewFileSplitHook())
-	log.l.SetLevel(logrus.DebugLevel)
-	return log
+	return &Logger{
+		l: newLogger(),
+	}
 }
 
 func newLogger() *logrus.Logger {
@@ -60,6 +59,8 @@ func newLogger() *logrus.Logger {
 		},
 		Hooks: make(logrus.LevelHooks),
 	}
+	logger.AddHook(NewFileSplitHook())
+	logger.SetLevel(logrus.DebugLevel)
 	return logger
 }
 

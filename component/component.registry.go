@@ -29,11 +29,11 @@ func NewServiceRegistry() *ServiceRegistry {
 }
 
 func (s *ServiceRegistry) API(pattern string, r interface{}) {
-	constructor, ok := r.(func(c IContainer) interface{})
+	constructor, ok := r.(func(c IToolBox) interface{})
 	if !ok {
 		panic("constructor is not func(container component.IContainer) interface{}")
 	}
-	constrObj := constructor(NewContainer())
+	constrObj := constructor(NewToolBox())
 
 	routers, ok := s.services[configs.ServerTypeAPI]
 	if !ok {
@@ -82,11 +82,11 @@ func (s *ServiceRegistry) API(pattern string, r interface{}) {
 }
 
 func (s *ServiceRegistry) Cron(sn string, tn string, r interface{}) {
-	constructor, ok := r.(func(c IContainer) interface{})
+	constructor, ok := r.(func(c IToolBox) interface{})
 	if !ok {
-		panic("constructor is not func(container component.IContainer) interface{}")
+		panic("constructor is not func(container component.IToolBox) interface{}")
 	}
-	constrObj := constructor(NewContainer())
+	constrObj := constructor(NewToolBox())
 
 	routers, ok := s.services[configs.ServerTypeCron]
 	if !ok {

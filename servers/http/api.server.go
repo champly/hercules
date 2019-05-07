@@ -55,7 +55,7 @@ func (a *ApiServer) getHandler(mode string) http.Handler {
 
 func (a *ApiServer) GeneralHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Writer.Header().Add("Access-Control-Allow-Origin", "http://localhost:8081")
+		c.Writer.Header().Add("Access-Control-Allow-Origin", "http://10.12.194.50:8081")
 		c.Writer.Header().Add("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Add("Access-Control-Allow-Headers", "__jwt__")
 		c.Writer.Header().Add("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,PATCH,OPTIONS")

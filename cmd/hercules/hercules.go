@@ -16,6 +16,7 @@ import (
 type Hercules struct {
 	*option
 	component.IServiceRegistry
+	component.IComponentDB
 	cl       chan bool
 	services map[string]servers.IServers
 }
@@ -24,6 +25,7 @@ func New(opts ...Option) *Hercules {
 	h := &Hercules{
 		option:           &option{ServerConfig: &configs.ServerConfig{Mode: "debug"}},
 		IServiceRegistry: component.NewServiceRegistry(),
+		IComponentDB:     component.NewComponentDB(),
 		cl:               make(chan bool),
 		services:         map[string]servers.IServers{},
 	}
