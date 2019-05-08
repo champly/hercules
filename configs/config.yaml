@@ -12,8 +12,8 @@ system:
 
 # logger config
 logger:
-    # panic/fatal/error/info/debug/trace  all contains all level
-    level: all
+    # panic/fatal/error/warn|warning/info/debug/trace
+    level: info
     # stdout/file
     out: stdout
 
@@ -33,4 +33,14 @@ httpserver:
 # cron server config
 cronserver:
     status: start
+
+
+
+
+
+
+
+
+
+
 
