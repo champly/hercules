@@ -1,9 +1,12 @@
 package cron
 
 import (
+	"errors"
 	"fmt"
+	"reflect"
 	"strings"
 
+	"github.com/champly/hercules/component"
 	"github.com/champly/hercules/configs"
 	"github.com/champly/hercules/ctxs"
 	"github.com/robfig/cron"
@@ -18,20 +21,31 @@ type CronServer struct {
 func NewCronServer(routers []ctxs.Router) (*CronServer, error) {
 	c := &CronServer{routers: routers}
 	c.server = cron.New()
-	c.AddFunc()
+	if err := c.AddFunc(); err != nil {
+		return nil, err
+	}
 	return c, nil
 }
 
-func (c *CronServer) AddFunc() {
-	for _, t := range c.routers {
-		c.server.AddFunc(t.Cron, func() {
+func (c *CronServer) AddFunc() error {
+	for _, r := range c.routers {
+		toolBox, ok := r.ToolBox.(component.IToolBox)
+		if !ok {
+			v := reflect.TypeOf(r.ToolBox)
+			return errors.New(v.Elem().Name() + " constructor is not assignment component.IToolBox")
+		}
+
+		c.server.AddFunc(r.Cron, func() {
 			ctx := ctxs.GetDContext()
 			defer ctx.Put()
-			if err := t.Handler(ctx); err != nil {
+
+			ctx.ToolBox = toolBox
+			if err := r.Handler(ctx); err != nil {
 				fmt.Println(err)
 			}
 		})
 	}
+	return nil
 }
 
 func (c *CronServer) Start() error {

@@ -11,16 +11,16 @@ type Router struct {
 	Method  string
 	Cron    string
 	Args    map[string]string
+	ToolBox interface{}
 	Handler Handler
 }
 
 type Handler func(*Context) error
 
 type Context struct {
-	// Request  *Request
-	// Response *Response
 	*gin.Context
-	Log ILog
+	Log     ILog
+	ToolBox interface{}
 }
 
 var contextPool *sync.Pool

@@ -52,14 +52,13 @@ func (h *Hercules) Start() {
 	signal.Notify(sign, os.Interrupt, os.Kill, syscall.SIGTERM)
 	select {
 	case <-sign:
-		fmt.Println("正在关闭服务器")
 		h.ShutDown()
 	}
-
 	fmt.Println("关闭成功")
 }
 
 func (h *Hercules) ShutDown() {
+	fmt.Println("正在关闭服务器")
 	go func() {
 		for _, server := range h.services {
 			server.ShutDown()

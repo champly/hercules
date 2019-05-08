@@ -50,31 +50,31 @@ func (s *ServiceRegistry) API(pattern string, r interface{}) {
 			if !ok {
 				panic(t.Method(i).Name + " is not func(*ctxs.Context) error method")
 			}
-			routers = append(routers, ctxs.Router{Name: pattern, Method: configs.HttpMethodALL, Handler: h})
+			routers = append(routers, ctxs.Router{Name: pattern, Method: configs.HttpMethodALL, Handler: h, ToolBox: constrObj})
 		case "GetHandler":
 			h, ok := v.Method(i).Interface().(func(*ctxs.Context) error)
 			if !ok {
 				panic(t.Method(i).Name + " is not func(*ctxs.Context) error method")
 			}
-			routers = append(routers, ctxs.Router{Name: pattern, Method: configs.HttpMethodGet, Handler: h})
+			routers = append(routers, ctxs.Router{Name: pattern, Method: configs.HttpMethodGet, Handler: h, ToolBox: constrObj})
 		case "PostHandler":
 			h, ok := v.Method(i).Interface().(func(*ctxs.Context) error)
 			if !ok {
 				panic(t.Method(i).Name + " is not func(*ctxs.Context) error method")
 			}
-			routers = append(routers, ctxs.Router{Name: pattern, Method: configs.HttpMethodPost, Handler: h})
+			routers = append(routers, ctxs.Router{Name: pattern, Method: configs.HttpMethodPost, Handler: h, ToolBox: constrObj})
 		case "PutHandler":
 			h, ok := v.Method(i).Interface().(func(*ctxs.Context) error)
 			if !ok {
 				panic(t.Method(i).Name + " is not func(*ctxs.Context) error method")
 			}
-			routers = append(routers, ctxs.Router{Name: pattern, Method: configs.HttpMethodPut, Handler: h})
+			routers = append(routers, ctxs.Router{Name: pattern, Method: configs.HttpMethodPut, Handler: h, ToolBox: constrObj})
 		case "DeleteHandler":
 			h, ok := v.Method(i).Interface().(func(*ctxs.Context) error)
 			if !ok {
 				panic(t.Method(i).Name + " is not func(*ctxs.Context) error method")
 			}
-			routers = append(routers, ctxs.Router{Name: pattern, Method: configs.HttpMethodDelete, Handler: h})
+			routers = append(routers, ctxs.Router{Name: pattern, Method: configs.HttpMethodDelete, Handler: h, ToolBox: constrObj})
 		}
 	}
 
@@ -101,7 +101,7 @@ func (s *ServiceRegistry) Cron(sn string, tn string, r interface{}) {
 			if !ok {
 				panic(t.Method(i).Name + " is not func(*ctxs.Context) error method")
 			}
-			routers = append(routers, ctxs.Router{Name: sn, Cron: tn, Handler: h})
+			routers = append(routers, ctxs.Router{Name: sn, Cron: tn, Handler: h, ToolBox: constrObj})
 			break
 		}
 	}

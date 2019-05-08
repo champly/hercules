@@ -2,23 +2,31 @@ package http
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
+	"reflect"
 	"strings"
 
+	"github.com/champly/hercules/component"
 	"github.com/champly/hercules/configs"
 	"github.com/champly/hercules/ctxs"
 	"github.com/gin-gonic/gin"
 )
 
+type handler struct {
+	Handler ctxs.Handler
+	ToolBox interface{}
+}
+
 type ApiServer struct {
-	services map[string]map[string]ctxs.Handler
+	services map[string]map[string]handler
 	server   *http.Server
 	engine   *gin.Engine
 }
 
 func NewApiServer(routers []ctxs.Router) (*ApiServer, error) {
-	a := &ApiServer{services: make(map[string]map[string]ctxs.Handler)}
+	a := &ApiServer{services: make(map[string]map[string]handler)}
 	a.server = &http.Server{
 		Addr: configs.HttpServerInfo.Address,
 	}
@@ -34,11 +42,20 @@ func NewApiServer(routers []ctxs.Router) (*ApiServer, error) {
 
 func (a *ApiServer) getRouter(routers []ctxs.Router) error {
 	for _, r := range routers {
+		toolbox, ok := r.ToolBox.(component.IToolBox)
+		if !ok {
+			v := reflect.TypeOf(r.ToolBox)
+			return errors.New(v.Elem().Name() + " constructor is not assignment component.IToolBox")
+		}
 		for _, m := range strings.Split(r.Method, "|") {
 			if _, ok := a.services[r.Name]; !ok {
-				a.services[r.Name] = map[string]ctxs.Handler{}
+				a.services[r.Name] = map[string]handler{}
 			}
-			a.services[r.Name][m] = r.Handler
+			a.services[r.Name][m] = handler{
+				Handler: r.Handler,
+				ToolBox: toolbox,
+			}
+
 		}
 	}
 	return nil
@@ -68,26 +85,27 @@ func (a *ApiServer) GeneralHandler() gin.HandlerFunc {
 			}
 		}
 
-		handler := a.GetRouter(c.Request.URL.String(), c.Request.Method)
-		if handler == nil {
+		h := a.GetRouter(c.Request.URL.String(), c.Request.Method)
+		if h.Handler == nil {
 			c.Status(http.StatusNotFound)
 			return
 		}
 		ctx := ctxs.GetContext(c)
 		defer ctx.Put()
+		ctx.ToolBox = h.ToolBox
 
-		if err := handler(ctx); err != nil {
+		if err := h.Handler(ctx); err != nil {
 			fmt.Println(err)
 		}
 		return
 	}
 }
 
-func (a *ApiServer) GetRouter(router string, method string) ctxs.Handler {
+func (a *ApiServer) GetRouter(router string, method string) (h handler) {
 	method = strings.ToUpper(method)
 	r, ok := a.services[router]
 	if !ok {
-		return nil
+		return
 	}
 	return r[method]
 }
