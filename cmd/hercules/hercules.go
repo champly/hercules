@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/champly/hercules/component"
-	"github.com/champly/hercules/configs"
 	_ "github.com/champly/hercules/init"
 	"github.com/champly/hercules/servers"
 )
@@ -23,7 +22,7 @@ type Hercules struct {
 
 func New(opts ...Option) *Hercules {
 	h := &Hercules{
-		option:           &option{ServerConfig: &configs.ServerConfig{Mode: "debug"}},
+		option:           &option{},
 		IServiceRegistry: component.NewServiceRegistry(),
 		IComponentDB:     component.NewComponentDB(),
 		cl:               make(chan bool),
@@ -37,16 +36,15 @@ func New(opts ...Option) *Hercules {
 
 func (h *Hercules) Start() {
 	for _, t := range h.ServiceType {
-		server, err := servers.NewRegistryServer(t, h.ServerConfig, h.GetRouters(t))
+		server, err := servers.NewRegistryServer(t, h.GetRouters(t))
 		if err != nil {
 			panic(err)
 		}
 		if err = server.Start(); err != nil {
-			fmt.Println(err)
-			fmt.Println(t + "启动失败")
-			return
+			fmt.Println(t+" start fail:", err)
+			continue
 		}
-		fmt.Println(t + "启动成功")
+		fmt.Println(t + " start success")
 		h.services[t] = server
 	}
 

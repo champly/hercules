@@ -7,8 +7,8 @@ import (
 
 type apiServerAdapter struct{}
 
-func (a *apiServerAdapter) Resolve(sConf *configs.ServerConfig, router []configs.Router) (servers.IServers, error) {
-	return NewApiServer(sConf, router)
+func (a *apiServerAdapter) Resolve(router []configs.Router) (servers.IServers, error) {
+	return NewApiServer(router)
 }
 
 func init() {

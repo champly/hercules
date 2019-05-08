@@ -12,20 +12,22 @@ import (
 )
 
 type ApiServer struct {
-	*configs.ServerConfig
 	services map[string]map[string]ctxs.Handler
 	server   *http.Server
 	engine   *gin.Engine
 }
 
-func NewApiServer(sConf *configs.ServerConfig, routers []configs.Router) (*ApiServer, error) {
-	a := &ApiServer{ServerConfig: sConf, services: make(map[string]map[string]ctxs.Handler)}
+func NewApiServer(routers []configs.Router) (*ApiServer, error) {
+	a := &ApiServer{services: make(map[string]map[string]ctxs.Handler)}
 	a.server = &http.Server{
-		Addr: a.Addr,
+		Addr: configs.HttpServerInfo.Address,
 	}
-	a.server.Handler = a.getHandler(a.Mode)
+	a.server.Handler = a.getHandler(configs.SystemInfo.Mode)
 	if err := a.getRouter(routers); err != nil {
 		return nil, err
+	}
+	if configs.HttpServerInfo.Cors.Enable {
+		fmt.Println("cors enable")
 	}
 	return a, nil
 }
@@ -44,10 +46,12 @@ func (a *ApiServer) getRouter(routers []configs.Router) error {
 
 func (a *ApiServer) getHandler(mode string) http.Handler {
 	gin.SetMode(mode)
+
 	engine := gin.New()
-	if mode == "debug" {
+	if strings.EqualFold(mode, "debug") {
 		engine.Use(gin.Logger())
 	}
+
 	engine.Use(gin.Recovery())
 	engine.Any("/*router", a.GeneralHandler())
 	return engine
@@ -55,14 +59,13 @@ func (a *ApiServer) getHandler(mode string) http.Handler {
 
 func (a *ApiServer) GeneralHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Writer.Header().Add("Access-Control-Allow-Origin", "http://10.12.194.50:8081")
-		c.Writer.Header().Add("Access-Control-Allow-Credentials", "true")
-		c.Writer.Header().Add("Access-Control-Allow-Headers", "__jwt__")
-		c.Writer.Header().Add("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,PATCH,OPTIONS")
-		c.Writer.Header().Add("Access-Control-Expose-Headers", "__jwt__")
-
-		if strings.EqualFold(c.Request.Method, configs.HttpMethodOptions) {
-			return
+		if configs.HttpServerInfo.Cors.Enable {
+			for k, v := range configs.HttpServerInfo.Cors.Header {
+				c.Writer.Header().Add(k, v)
+			}
+			if strings.EqualFold(c.Request.Method, configs.HttpMethodOptions) {
+				return
+			}
 		}
 
 		handler := a.GetRouter(c.Request.URL.String(), c.Request.Method)
@@ -90,6 +93,10 @@ func (a *ApiServer) GetRouter(router string, method string) ctxs.Handler {
 }
 
 func (a *ApiServer) Start() error {
+	if !strings.EqualFold(configs.HttpServerInfo.Status, "start") {
+		return fmt.Errorf("http server config is: %s", configs.HttpServerInfo.Status)
+	}
+
 	go func() {
 		if err := a.server.ListenAndServe(); err != nil {
 			fmt.Println(err)

@@ -2,6 +2,7 @@ package cron
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/champly/hercules/configs"
 	"github.com/champly/hercules/ctxs"
@@ -9,14 +10,13 @@ import (
 )
 
 type CronServer struct {
-	*configs.ServerConfig
 	server   *cron.Cron
 	schedule cron.Schedule
 	routers  []configs.Router
 }
 
-func NewCronServer(sConf *configs.ServerConfig, routers []configs.Router) (*CronServer, error) {
-	c := &CronServer{ServerConfig: sConf, routers: routers}
+func NewCronServer(routers []configs.Router) (*CronServer, error) {
+	c := &CronServer{routers: routers}
 	c.server = cron.New()
 	c.AddFunc()
 	return c, nil
@@ -35,6 +35,10 @@ func (c *CronServer) AddFunc() {
 }
 
 func (c *CronServer) Start() error {
+	if !strings.EqualFold(configs.CronServerInfo.Status, "start") {
+		return fmt.Errorf("cron server config is: %s", configs.CronServerInfo.Status)
+	}
+
 	go c.server.Start()
 	return nil
 }

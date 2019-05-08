@@ -7,8 +7,8 @@ import (
 
 type cronServerAdapter struct{}
 
-func (c *cronServerAdapter) Resolve(sConf *configs.ServerConfig, routers []configs.Router) (servers.IServers, error) {
-	return NewCronServer(sConf, routers)
+func (c *cronServerAdapter) Resolve(routers []configs.Router) (servers.IServers, error) {
+	return NewCronServer(routers)
 }
 
 func init() {

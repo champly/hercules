@@ -1,6 +1,42 @@
-platname:
-    test
-system-name:
-    test_system
+# platinfo config
+plat:
+    name: plat-test
+
+# systeminfo config
+system:
+    name: system-test
+    mode: debug
+    type: api|cron
+
+# logger config
 logger:
-    level: "debug"
+    level: debug
+    out: stdio|file
+
+# http server config
+httpserver:
+    cors:
+        header:
+        - 'Access-Control-Allow-Origin': 'http://10.12.194.50:8081' 
+        - 'Access-Control-Allow-Credentials': 'true'
+        - 'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,PATCH,OPTIONS'
+        - 'Access-Control-Allow-Headers': '__jwt__'
+        - 'Access-Control-Expose-Headers': '__jwt__'
+        enable: false
+    address: :8080
+    status: start
+
+# cron server config
+cronserver:
+    status: start
+
+
+
+
+
+
+
+
+
+
+
