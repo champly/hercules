@@ -1,7 +1,9 @@
 package component
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 	"sync"
 
 	"github.com/champly/hercules/configs"
@@ -10,15 +12,13 @@ import (
 )
 
 type IComponentDB interface {
-	SetDefault(name string, conf configs.DBConfig)
 	GetDefDB() (db.IDB, error)
-	GetDB(name string, conf configs.DBConfig) (db.IDB, error)
+	GetDB(name string) (db.IDB, error)
 }
 
 type ComponentDB struct {
-	defName   string
-	defConfig configs.DBConfig
-	pool      cmap.ConcurrentMap
+	defName string
+	pool    cmap.ConcurrentMap
 }
 
 var (
@@ -39,24 +39,30 @@ func NewComponentDB() *ComponentDB {
 	componentDB = &ComponentDB{
 		pool: cmap.New(2),
 	}
+	for _, dbConf := range configs.DBInfo.List {
+		if dbConf.Default {
+			componentDB.defName = dbConf.Name
+			break
+		}
+	}
 	return componentDB
 }
 
-func (c *ComponentDB) SetDefault(name string, conf configs.DBConfig) {
-	c.defName = name
-	c.defConfig = conf
-}
-
 func (c *ComponentDB) GetDefDB() (db.IDB, error) {
-	return c.GetDB(c.defName, c.defConfig)
+	return c.GetDB(c.defName)
 }
 
-func (c *ComponentDB) GetDB(name string, conf configs.DBConfig) (db.IDB, error) {
+func (c *ComponentDB) GetDB(name string) (db.IDB, error) {
 	_, dbObj, err := c.pool.SetIfAbsentCb(name, func(key string, input ...interface{}) (interface{}, error) {
-		return db.NewDB(conf.Provider, conf.ConnString, conf.MaxIdle, conf.MaxOpen, conf.MaxLifeTime)
+		for _, conf := range configs.DBInfo.List {
+			if strings.EqualFold(conf.Name, name) {
+				return db.NewDB(conf.Provider, conf.ConnString, conf.MaxIdle, conf.MaxOpen, conf.MaxLifeTime)
+			}
+		}
+		return nil, errors.New(name + " is not config")
 	})
 	if err != nil {
-		return nil, fmt.Errorf("创建db失败:config:%+v, err:%s", conf, err)
+		return nil, fmt.Errorf("创建db失败: err:%s", err)
 	}
 	return dbObj.(db.IDB), nil
 }

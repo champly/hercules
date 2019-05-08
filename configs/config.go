@@ -8,6 +8,7 @@ type Config struct {
 	Plat       plat       `json:"plat"`
 	System     system     `json:"system"`
 	Logger     logger     `json:"logger"`
+	DB         db         `json:"db"`
 	HttpServer httpserver `json:"httpserver"`
 	CronServer cronserver `json:"cronserver"`
 }
@@ -25,6 +26,18 @@ type system struct {
 type logger struct {
 	Level string `json:"level"`
 	Out   string `json:"out"`
+}
+
+type db struct {
+	List []struct {
+		Name        string `json:"name"`
+		Default     bool   `json:"default"`
+		Provider    string `json:"provider"`
+		ConnString  string `json:"connstring"`
+		MaxOpen     int    `json:"maxopen"`
+		MaxIdle     int    `json:"maxidle"`
+		MaxLifeTime int    `json:"maxlifetime"`
+	} `json:"list"`
 }
 
 type httpserver struct {
@@ -50,6 +63,7 @@ var (
 	LoggerInfo     = &logger{}
 	HttpServerInfo = &httpserver{}
 	CronServerInfo = &cronserver{}
+	DBInfo         = &db{}
 )
 
 func setDefault() {
@@ -72,4 +86,5 @@ func Setup() {
 	LoggerInfo = &config.Logger
 	HttpServerInfo = &config.HttpServer
 	CronServerInfo = &config.CronServer
+	DBInfo = &config.DB
 }
