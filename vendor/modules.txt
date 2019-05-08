@@ -1,7 +1,9 @@
-# github.com/champly/lib4go v0.0.0-20190506100248-e328118d1c7d
+# github.com/champly/lib4go v0.0.0-20190508085909-a4b11130be95
 github.com/champly/lib4go/concurrent
 github.com/champly/lib4go/db
+github.com/champly/lib4go/tool
 github.com/champly/lib4go/db/tpl
+github.com/champly/lib4go/security/md5
 # github.com/fsnotify/fsnotify v1.4.7
 github.com/fsnotify/fsnotify
 # github.com/gin-contrib/sse v0.0.0-20190301062529-5545eab6dad3
