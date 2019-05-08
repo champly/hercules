@@ -37,7 +37,11 @@ type httpserver struct {
 }
 
 type cronserver struct {
-	Status string `json:"status"`
+	Status   string `json:"status"`
+	TaskList []struct {
+		Name string `json:"name"`
+		Time string `json:"time"`
+	} `json:"tasklist"`
 }
 
 var (

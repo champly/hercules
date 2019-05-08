@@ -6,7 +6,7 @@ plat:
 system:
     name: system-test
     # mode: debug/release
-    mode: debug
+    mode: release
     # api/cron
     type: api|cron
 
@@ -33,14 +33,8 @@ httpserver:
 # cron server config
 cronserver:
     status: start
-
-
-
-
-
-
-
-
-
-
+    tasklist:
+    -
+        name: 'auto.create.data'
+        time: '@every 10s'
 

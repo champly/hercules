@@ -29,29 +29,46 @@ func NewCronServer(routers []ctxs.Router, handing func(*ctxs.Context) error) (*C
 }
 
 func (c *CronServer) AddFunc() error {
-	for _, r := range c.routers {
-		toolBox, ok := r.ToolBox.(component.IToolBox)
-		if !ok {
-			v := reflect.TypeOf(r.ToolBox)
-			return errors.New(v.Elem().Name() + " constructor is not assignment component.IToolBox")
-		}
+	taskListConfig := configs.CronServerInfo.TaskList
 
-		c.server.AddFunc(r.Cron, func() {
-			ctx := ctxs.GetDContext()
-			defer ctx.Put()
+	for _, taskConf := range taskListConfig {
+		isExist := false
+		for _, task := range c.routers {
+			if !strings.EqualFold(task.Name, taskConf.Name) {
+				continue
+			}
 
-			ctx.ToolBox = toolBox
-			if c.handing != nil {
-				if err := c.handing(ctx); err != nil {
-					return
+			isExist = true
+			toolBox, ok := task.ToolBox.(component.IToolBox)
+			if !ok {
+				v := reflect.TypeOf(task.ToolBox)
+				return errors.New(v.Elem().Name() + " constructor is not assignment component.IToolBox")
+			}
+
+			err := c.server.AddFunc(taskConf.Time, func() {
+				ctx := ctxs.GetDContext()
+				defer ctx.Put()
+
+				ctx.ToolBox = toolBox
+				if c.handing != nil {
+					if err := c.handing(ctx); err != nil {
+						return
+					}
 				}
-			}
 
-			if err := r.Handler(ctx); err != nil {
-				fmt.Println(err)
+				if err := task.Handler(ctx); err != nil {
+					fmt.Println(err)
+				}
+			})
+			if err != nil {
+				return err
 			}
-		})
+		}
+		if !isExist {
+			return errors.New(taskConf.Name + " cron task is not exist")
+		}
 	}
+
 	return nil
 }
 

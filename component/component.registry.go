@@ -16,7 +16,7 @@ type Router struct {
 
 type IServiceRegistry interface {
 	API(pattern string, handle interface{})
-	Cron(serverName string, timespan string, handle interface{})
+	Cron(name string, handle interface{})
 	GetRouters(st string) []ctxs.Router
 }
 
@@ -81,7 +81,7 @@ func (s *ServiceRegistry) API(pattern string, r interface{}) {
 	s.services[configs.ServerTypeAPI] = routers
 }
 
-func (s *ServiceRegistry) Cron(sn string, tn string, r interface{}) {
+func (s *ServiceRegistry) Cron(name string, r interface{}) {
 	constructor, ok := r.(func(c IToolBox) interface{})
 	if !ok {
 		panic("constructor is not func(container component.IToolBox) interface{}")
@@ -101,7 +101,7 @@ func (s *ServiceRegistry) Cron(sn string, tn string, r interface{}) {
 			if !ok {
 				panic(t.Method(i).Name + " is not func(*ctxs.Context) error method")
 			}
-			routers = append(routers, ctxs.Router{Name: sn, Cron: tn, Handler: h, ToolBox: constrObj})
+			routers = append(routers, ctxs.Router{Name: name, Handler: h, ToolBox: constrObj})
 			break
 		}
 	}
