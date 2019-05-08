@@ -10,7 +10,7 @@ import (
 var resolvers = make(map[string]IServersResolver)
 
 type IServersResolver interface {
-	Resolve(router []ctxs.Router) (IServers, error)
+	Resolve(router []ctxs.Router, handing func(*ctxs.Context) error) (IServers, error)
 }
 
 type IServers interface {
@@ -26,9 +26,9 @@ func Registry(serverType string, resolver IServersResolver) {
 	resolvers[serverType] = resolver
 }
 
-func NewRegistryServer(serverType string, router []ctxs.Router) (IServers, error) {
+func NewRegistryServer(serverType string, router []ctxs.Router, handing func(*ctxs.Context) error) (IServers, error) {
 	if resolver, ok := resolvers[serverType]; ok {
-		return resolver.Resolve(router)
+		return resolver.Resolve(router, handing)
 	}
 	return nil, errors.New(fmt.Sprintf("server type is not support:%s", serverType))
 }

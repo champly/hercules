@@ -16,10 +16,11 @@ type CronServer struct {
 	server   *cron.Cron
 	schedule cron.Schedule
 	routers  []ctxs.Router
+	handing  func(*ctxs.Context) error
 }
 
-func NewCronServer(routers []ctxs.Router) (*CronServer, error) {
-	c := &CronServer{routers: routers}
+func NewCronServer(routers []ctxs.Router, handing func(*ctxs.Context) error) (*CronServer, error) {
+	c := &CronServer{routers: routers, handing: handing}
 	c.server = cron.New()
 	if err := c.AddFunc(); err != nil {
 		return nil, err
@@ -40,6 +41,12 @@ func (c *CronServer) AddFunc() error {
 			defer ctx.Put()
 
 			ctx.ToolBox = toolBox
+			if c.handing != nil {
+				if err := c.handing(ctx); err != nil {
+					return
+				}
+			}
+
 			if err := r.Handler(ctx); err != nil {
 				fmt.Println(err)
 			}

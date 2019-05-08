@@ -1,8 +1,6 @@
 package ctxs
 
 import (
-	"sync"
-
 	"github.com/champly/hercules/configs"
 	"github.com/sirupsen/logrus"
 )
@@ -33,11 +31,6 @@ type Logger struct {
 	l *logrus.Logger
 }
 
-var (
-	logger *logrus.Logger
-	lock   sync.Mutex
-)
-
 func NewLogger() *Logger {
 	return &Logger{
 		l: newLogger(),
@@ -45,16 +38,7 @@ func NewLogger() *Logger {
 }
 
 func newLogger() *logrus.Logger {
-	if logger != nil {
-		return logger
-	}
-	lock.Lock()
-	defer lock.Unlock()
-
-	if logger != nil {
-		return logger
-	}
-	logger = &logrus.Logger{
+	logger := &logrus.Logger{
 		Formatter: &logrus.JSONFormatter{
 			TimestampFormat: "2006-01-02 15:04:05",
 		},

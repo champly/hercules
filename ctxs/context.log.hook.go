@@ -16,15 +16,21 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type FileSplitHook struct {
-	out  map[string]io.Writer
+var (
 	lock sync.Mutex
-	sid  string
+	out  map[string]io.Writer
+)
+
+func init() {
+	out = map[string]io.Writer{}
+}
+
+type FileSplitHook struct {
+	sid string
 }
 
 func NewFileSplitHook() *FileSplitHook {
 	return &FileSplitHook{
-		out: map[string]io.Writer{},
 		sid: GetGuid(),
 	}
 }
@@ -34,7 +40,7 @@ func (f *FileSplitHook) Levels() []logrus.Level {
 }
 
 func (f *FileSplitHook) Fire(e *logrus.Entry) (err error) {
-	e.Logger.Out, err = f.getStdOut(e.Time.Format("2006-01-02"))
+	e.Logger.Out, err = getStdOut(e.Time.Format("2006-01-02"))
 	if err != nil {
 		return err
 	}
@@ -42,16 +48,21 @@ func (f *FileSplitHook) Fire(e *logrus.Entry) (err error) {
 	return nil
 }
 
-func (f *FileSplitHook) getStdOut(t string) (io.Writer, error) {
-	fp, ok := f.out[t]
+func getStdOut(t string) (io.Writer, error) {
+	fp, ok := out[t]
 	if ok {
 		return fp, nil
 	}
-	f.lock.Lock()
-	defer f.lock.Unlock()
+	lock.Lock()
+	defer lock.Unlock()
 
-	if fp, ok = f.out[t]; ok {
+	if fp, ok = out[t]; ok {
 		return fp, nil
+	}
+
+	if strings.Trim(configs.LoggerInfo.Out, " ") == "" {
+		out[t] = os.Stdout
+		return os.Stdout, nil
 	}
 
 	mw := []io.Writer{}
@@ -72,9 +83,12 @@ func (f *FileSplitHook) getStdOut(t string) (io.Writer, error) {
 			panic("not support logger write function:" + ty)
 		}
 	}
+	if len(mw) == 0 {
+		panic("logger is not out")
+	}
 
 	iw := io.MultiWriter(mw...)
-	f.out[t] = iw
+	out[t] = iw
 	return iw, nil
 }
 

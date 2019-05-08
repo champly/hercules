@@ -1,6 +1,8 @@
 package hercules
 
-import "github.com/champly/hercules/configs"
+import (
+	"github.com/champly/hercules/configs"
+)
 
 type option struct {
 	ServiceType []string

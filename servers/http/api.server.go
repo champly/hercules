@@ -23,10 +23,11 @@ type ApiServer struct {
 	services map[string]map[string]handler
 	server   *http.Server
 	engine   *gin.Engine
+	handing  func(*ctxs.Context) error
 }
 
-func NewApiServer(routers []ctxs.Router) (*ApiServer, error) {
-	a := &ApiServer{services: make(map[string]map[string]handler)}
+func NewApiServer(routers []ctxs.Router, handing func(*ctxs.Context) error) (*ApiServer, error) {
+	a := &ApiServer{services: make(map[string]map[string]handler), handing: handing}
 	a.server = &http.Server{
 		Addr: configs.HttpServerInfo.Address,
 	}
@@ -94,6 +95,11 @@ func (a *ApiServer) GeneralHandler() gin.HandlerFunc {
 		defer ctx.Put()
 		ctx.ToolBox = h.ToolBox
 
+		if a.handing != nil {
+			if err := a.handing(ctx); err != nil {
+				return
+			}
+		}
 		if err := h.Handler(ctx); err != nil {
 			fmt.Println(err)
 		}

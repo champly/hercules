@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/champly/hercules/component"
+	"github.com/champly/hercules/ctxs"
 	_ "github.com/champly/hercules/init"
 	"github.com/champly/hercules/servers"
 )
@@ -18,6 +19,7 @@ type Hercules struct {
 	component.IComponentDB
 	cl       chan bool
 	services map[string]servers.IServers
+	handing  func(ctx *ctxs.Context) error
 }
 
 func New(opts ...Option) *Hercules {
@@ -36,7 +38,7 @@ func New(opts ...Option) *Hercules {
 
 func (h *Hercules) Start() {
 	for _, t := range h.ServiceType {
-		server, err := servers.NewRegistryServer(t, h.GetRouters(t))
+		server, err := servers.NewRegistryServer(t, h.GetRouters(t), h.handing)
 		if err != nil {
 			panic(err)
 		}
@@ -72,4 +74,8 @@ func (h *Hercules) ShutDown() {
 	case <-h.cl:
 		return
 	}
+}
+
+func (h *Hercules) Handing(f func(*ctxs.Context) error) {
+	h.handing = f
 }
