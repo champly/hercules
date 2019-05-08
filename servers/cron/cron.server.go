@@ -12,10 +12,10 @@ import (
 type CronServer struct {
 	server   *cron.Cron
 	schedule cron.Schedule
-	routers  []configs.Router
+	routers  []ctxs.Router
 }
 
-func NewCronServer(routers []configs.Router) (*CronServer, error) {
+func NewCronServer(routers []ctxs.Router) (*CronServer, error) {
 	c := &CronServer{routers: routers}
 	c.server = cron.New()
 	c.AddFunc()

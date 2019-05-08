@@ -1,13 +1,13 @@
 package cron
 
 import (
-	"github.com/champly/hercules/configs"
+	"github.com/champly/hercules/ctxs"
 	"github.com/champly/hercules/servers"
 )
 
 type cronServerAdapter struct{}
 
-func (c *cronServerAdapter) Resolve(routers []configs.Router) (servers.IServers, error) {
+func (c *cronServerAdapter) Resolve(routers []ctxs.Router) (servers.IServers, error) {
 	return NewCronServer(routers)
 }
 

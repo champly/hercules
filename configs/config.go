@@ -52,7 +52,7 @@ func setDefault() {
 	viper.SetDefault("plat", plat{Name: "hercules-plat"})
 	viper.SetDefault("system", system{Name: "hercules-system", Mode: "debug"})
 	viper.SetDefault("httpserver", httpserver{Address: ":8080"})
-	viper.SetDefault("logger", logger{Level: "debug", Out: "stdio"})
+	viper.SetDefault("logger", logger{Level: "all", Out: "stdio"})
 }
 
 func Setup() {

@@ -5,11 +5,14 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"sync"
 
+	"github.com/champly/hercules/configs"
 	"github.com/sirupsen/logrus"
 )
 
@@ -30,31 +33,49 @@ func (f *FileSplitHook) Levels() []logrus.Level {
 	return logrus.AllLevels
 }
 
-func (f *FileSplitHook) Fire(e *logrus.Entry) error {
-	e.Logger.Out = f.getStdOut(e.Time.Format("2006-01-02"))
+func (f *FileSplitHook) Fire(e *logrus.Entry) (err error) {
+	e.Logger.Out, err = f.getStdOut(e.Time.Format("2006-01-02"))
+	if err != nil {
+		return err
+	}
 	e.Data["sid"] = f.sid
 	return nil
 }
 
-func (f *FileSplitHook) getStdOut(t string) io.Writer {
-	if len(t) < 10 {
-		return os.Stdout
-	}
+func (f *FileSplitHook) getStdOut(t string) (io.Writer, error) {
 	fp, ok := f.out[t]
 	if ok {
-		return fp
+		return fp, nil
 	}
 	f.lock.Lock()
 	defer f.lock.Unlock()
 
 	if fp, ok = f.out[t]; ok {
-		return fp
+		return fp, nil
 	}
 
-	fp, _ = os.OpenFile(fmt.Sprintf("%s.log", t), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
-	iw := io.MultiWriter(os.Stdout, fp)
+	mw := []io.Writer{}
+	for _, ty := range strings.Split(configs.LoggerInfo.Out, "|") {
+		switch strings.ToLower(strings.Trim(ty, " ")) {
+		case "stdout":
+			mw = append(mw, os.Stdout)
+		case "file":
+			if len(t) < 10 {
+				break
+			}
+			fp, err := os.OpenFile(fmt.Sprintf("%s.log", t), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+			if err != nil {
+				return nil, errors.New("logger out(file) create log file err:" + err.Error())
+			}
+			mw = append(mw, fp)
+		default:
+			panic("not support logger write function:" + ty)
+		}
+	}
+
+	iw := io.MultiWriter(mw...)
 	f.out[t] = iw
-	return iw
+	return iw, nil
 }
 
 //生成32位md5字串

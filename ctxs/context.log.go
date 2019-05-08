@@ -3,6 +3,7 @@ package ctxs
 import (
 	"sync"
 
+	"github.com/champly/hercules/configs"
 	"github.com/sirupsen/logrus"
 )
 
@@ -60,7 +61,11 @@ func newLogger() *logrus.Logger {
 		Hooks: make(logrus.LevelHooks),
 	}
 	logger.AddHook(NewFileSplitHook())
-	logger.SetLevel(logrus.DebugLevel)
+	lev, err := logrus.ParseLevel(configs.LoggerInfo.Level)
+	if err != nil {
+		panic(err)
+	}
+	logger.SetLevel(lev)
 	return logger
 }
 

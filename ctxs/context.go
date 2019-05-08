@@ -6,6 +6,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type Router struct {
+	Name    string
+	Method  string
+	Cron    string
+	Args    map[string]string
+	Handler Handler
+}
+
 type Handler func(*Context) error
 
 type Context struct {

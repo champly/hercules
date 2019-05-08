@@ -17,7 +17,7 @@ type ApiServer struct {
 	engine   *gin.Engine
 }
 
-func NewApiServer(routers []configs.Router) (*ApiServer, error) {
+func NewApiServer(routers []ctxs.Router) (*ApiServer, error) {
 	a := &ApiServer{services: make(map[string]map[string]ctxs.Handler)}
 	a.server = &http.Server{
 		Addr: configs.HttpServerInfo.Address,
@@ -32,7 +32,7 @@ func NewApiServer(routers []configs.Router) (*ApiServer, error) {
 	return a, nil
 }
 
-func (a *ApiServer) getRouter(routers []configs.Router) error {
+func (a *ApiServer) getRouter(routers []ctxs.Router) error {
 	for _, r := range routers {
 		for _, m := range strings.Split(r.Method, "|") {
 			if _, ok := a.services[r.Name]; !ok {

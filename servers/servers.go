@@ -4,13 +4,13 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/champly/hercules/configs"
+	"github.com/champly/hercules/ctxs"
 )
 
 var resolvers = make(map[string]IServersResolver)
 
 type IServersResolver interface {
-	Resolve(router []configs.Router) (IServers, error)
+	Resolve(router []ctxs.Router) (IServers, error)
 }
 
 type IServers interface {
@@ -26,7 +26,7 @@ func Registry(serverType string, resolver IServersResolver) {
 	resolvers[serverType] = resolver
 }
 
-func NewRegistryServer(serverType string, router []configs.Router) (IServers, error) {
+func NewRegistryServer(serverType string, router []ctxs.Router) (IServers, error) {
 	if resolver, ok := resolvers[serverType]; ok {
 		return resolver.Resolve(router)
 	}
