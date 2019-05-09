@@ -5,7 +5,7 @@ import (
 )
 
 type IToolBox interface {
-	GetDefDB() (db.IDB, error)
+	GetDefDB() db.IDB
 	GetDB(name string) (db.IDB, error)
 }
 

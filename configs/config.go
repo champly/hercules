@@ -18,9 +18,10 @@ type plat struct {
 }
 
 type system struct {
-	Name string `json:"name"`
-	Mode string `json:"mode"`
-	Type string `json:"type"`
+	Name   string `json:"name"`
+	Mode   string `json:"mode"`
+	Type   string `json:"type"`
+	Health bool   `json:"health"`
 }
 
 type logger struct {
@@ -68,7 +69,7 @@ var (
 
 func setDefault() {
 	viper.SetDefault("plat", plat{Name: "hercules-plat"})
-	viper.SetDefault("system", system{Name: "hercules-system", Mode: "debug"})
+	viper.SetDefault("system", system{Name: "hercules-system", Mode: "debug", Health: true})
 	viper.SetDefault("httpserver", httpserver{Address: ":8080"})
 	viper.SetDefault("logger", logger{Level: "all", Out: "stdio"})
 }

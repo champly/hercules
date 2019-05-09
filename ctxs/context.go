@@ -3,22 +3,14 @@ package ctxs
 import (
 	"sync"
 
+	"github.com/champly/hercules/component"
 	"github.com/gin-gonic/gin"
 )
-
-type Router struct {
-	Name    string
-	Method  string
-	ToolBox interface{}
-	Handler Handler
-}
-
-type Handler func(*Context) error
 
 type Context struct {
 	*gin.Context
 	Log     ILog
-	ToolBox interface{}
+	ToolBox component.IToolBox
 }
 
 var contextPool *sync.Pool
@@ -26,7 +18,9 @@ var contextPool *sync.Pool
 func init() {
 	contextPool = &sync.Pool{
 		New: func() interface{} {
-			return &Context{}
+			return &Context{
+				ToolBox: component.NewToolBox(),
+			}
 		},
 	}
 }

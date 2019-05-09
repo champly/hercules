@@ -2,15 +2,18 @@ package servers
 
 import (
 	"errors"
-	"fmt"
-
-	"github.com/champly/hercules/ctxs"
 )
 
 var resolvers = make(map[string]IServersResolver)
 
+type Router struct {
+	Name    string
+	Method  string
+	Handler interface{}
+}
+
 type IServersResolver interface {
-	Resolve(router []ctxs.Router, handing func(*ctxs.Context) error) (IServers, error)
+	Resolve(router []Router, handing interface{}) (IServers, error)
 }
 
 type IServers interface {
@@ -26,9 +29,9 @@ func Registry(serverType string, resolver IServersResolver) {
 	resolvers[serverType] = resolver
 }
 
-func NewRegistryServer(serverType string, router []ctxs.Router, handing func(*ctxs.Context) error) (IServers, error) {
+func NewRegistryServer(serverType string, router []Router, handing interface{}) (IServers, error) {
 	if resolver, ok := resolvers[serverType]; ok {
 		return resolver.Resolve(router, handing)
 	}
-	return nil, errors.New(fmt.Sprintf("server type is not support:%s", serverType))
+	return nil, errors.New("server type is not support:" + serverType)
 }

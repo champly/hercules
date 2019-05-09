@@ -9,6 +9,7 @@ system:
     mode: release
     # api/cron
     type: api|cron
+    health: true
 
 # logger config
 logger:

@@ -12,7 +12,7 @@ import (
 )
 
 type IComponentDB interface {
-	GetDefDB() (db.IDB, error)
+	GetDefDB() db.IDB
 	GetDB(name string) (db.IDB, error)
 }
 
@@ -48,8 +48,12 @@ func NewComponentDB() *ComponentDB {
 	return componentDB
 }
 
-func (c *ComponentDB) GetDefDB() (db.IDB, error) {
-	return c.GetDB(c.defName)
+func (c *ComponentDB) GetDefDB() db.IDB {
+	db, err := c.GetDB(c.defName)
+	if err != nil {
+		panic(err)
+	}
+	return db
 }
 
 func (c *ComponentDB) GetDB(name string) (db.IDB, error) {

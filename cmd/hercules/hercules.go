@@ -7,10 +7,13 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/champly/hercules/cmd/hercules/status"
 	"github.com/champly/hercules/component"
+	"github.com/champly/hercules/configs"
 	"github.com/champly/hercules/ctxs"
 	_ "github.com/champly/hercules/init"
 	"github.com/champly/hercules/servers"
+	"github.com/champly/hercules/servers/http"
 )
 
 type Hercules struct {
@@ -37,6 +40,24 @@ func New(opts ...Option) *Hercules {
 }
 
 func (h *Hercules) Start() {
+	// start services
+	h.startService()
+
+	// start health server
+	if configs.SystemInfo.Health {
+		h.startHealthService()
+	}
+
+	sign := make(chan os.Signal)
+	signal.Notify(sign, os.Interrupt, os.Kill, syscall.SIGTERM)
+	select {
+	case <-sign:
+		h.ShutDown()
+	}
+	fmt.Println("关闭成功")
+}
+
+func (h *Hercules) startService() {
 	for _, t := range h.ServiceType {
 		server, err := servers.NewRegistryServer(t, h.GetRouters(t), h.handing)
 		if err != nil {
@@ -49,14 +70,21 @@ func (h *Hercules) Start() {
 		fmt.Println(t + " start success")
 		h.services[t] = server
 	}
+}
 
-	sign := make(chan os.Signal)
-	signal.Notify(sign, os.Interrupt, os.Kill, syscall.SIGTERM)
-	select {
-	case <-sign:
-		h.ShutDown()
+func (h *Hercules) startHealthService() {
+	routers := []servers.Router{}
+	routers = append(routers, servers.Router{Name: "/status", Method: configs.HttpMethodALL, Handler: status.GetServerStatus})
+	statusServer, err := http.NewApiServer(routers, nil)
+	if err != nil {
+		panic(err)
 	}
-	fmt.Println("关闭成功")
+	statusServer.SetAddr(":16666")
+	if err = statusServer.Start(); err != nil {
+		fmt.Println("health server start fail:", err)
+		return
+	}
+	fmt.Println("health server start success")
 }
 
 func (h *Hercules) ShutDown() {

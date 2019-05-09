@@ -6,20 +6,25 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/champly/hercules/component"
 	"github.com/champly/hercules/configs"
 	"github.com/champly/hercules/ctxs"
+	"github.com/champly/hercules/servers"
 	"github.com/robfig/cron"
 )
 
 type CronServer struct {
 	server   *cron.Cron
 	schedule cron.Schedule
-	routers  []ctxs.Router
+	routers  []servers.Router
 	handing  func(*ctxs.Context) error
 }
 
-func NewCronServer(routers []ctxs.Router, handing func(*ctxs.Context) error) (*CronServer, error) {
+func NewCronServer(routers []servers.Router, h interface{}) (*CronServer, error) {
+	handing, ok := h.(func(*ctxs.Context) error)
+	if !ok {
+		panic("handing function is not func(ctx *ctxs.Context)error")
+	}
+
 	c := &CronServer{routers: routers, handing: handing}
 	c.server = cron.New()
 	if err := c.AddFunc(); err != nil {
@@ -34,29 +39,27 @@ func (c *CronServer) AddFunc() error {
 	for _, taskConf := range taskListConfig {
 		isExist := false
 		for _, task := range c.routers {
+			handler, ok := task.Handler.(func(*ctxs.Context) error)
+			if !ok {
+				v := reflect.TypeOf(task.Handler)
+				panic(v.Elem().Name() + " handler is not func(ctx *ctxs.Context)error")
+			}
+
 			if !strings.EqualFold(task.Name, taskConf.Name) {
 				continue
 			}
 
 			isExist = true
-			toolBox, ok := task.ToolBox.(component.IToolBox)
-			if !ok {
-				v := reflect.TypeOf(task.ToolBox)
-				return errors.New(v.Elem().Name() + " constructor is not assignment component.IToolBox")
-			}
-
 			err := c.server.AddFunc(taskConf.Time, func() {
 				ctx := ctxs.GetDContext()
 				defer ctx.Put()
 
-				ctx.ToolBox = toolBox
 				if c.handing != nil {
 					if err := c.handing(ctx); err != nil {
 						return
 					}
 				}
-
-				if err := task.Handler(ctx); err != nil {
+				if err := handler(ctx); err != nil {
 					fmt.Println(err)
 				}
 			})
