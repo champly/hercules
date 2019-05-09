@@ -36,6 +36,10 @@ func NewComponentDB() *ComponentDB {
 	if componentDB != nil {
 		return componentDB
 	}
+
+	if configs.DBInfo == nil || len(configs.DBInfo.List) < 1 {
+		panic("db config is empty, can't use db component")
+	}
 	componentDB = &ComponentDB{
 		pool: cmap.New(2),
 	}
@@ -49,6 +53,9 @@ func NewComponentDB() *ComponentDB {
 }
 
 func (c *ComponentDB) GetDefDB() db.IDB {
+	if c.defName == "" && len(configs.DBInfo.List) > 0 {
+		c.defName = configs.DBInfo.List[0].Name
+	}
 	db, err := c.GetDB(c.defName)
 	if err != nil {
 		panic(err)
@@ -58,6 +65,9 @@ func (c *ComponentDB) GetDefDB() db.IDB {
 
 func (c *ComponentDB) GetDB(name string) (db.IDB, error) {
 	_, dbObj, err := c.pool.SetIfAbsentCb(name, func(key string, input ...interface{}) (interface{}, error) {
+		if name == "" {
+			panic("db config name is empty")
+		}
 		for _, conf := range configs.DBInfo.List {
 			if strings.EqualFold(conf.Name, name) {
 				return db.NewDB(conf.Provider, conf.ConnString, conf.MaxIdle, conf.MaxOpen, conf.MaxLifeTime)
