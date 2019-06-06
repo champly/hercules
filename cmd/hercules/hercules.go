@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -58,7 +59,7 @@ func (h *Hercules) Start() {
 }
 
 func (h *Hercules) startService() {
-	for _, t := range h.ServiceType {
+	for _, t := range strings.Split(configs.SystemInfo.Type, "|") {
 		server, err := servers.NewRegistryServer(t, h.GetRouters(t), h.handing)
 		if err != nil {
 			panic(err)
