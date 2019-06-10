@@ -33,9 +33,3 @@ func WithMode(mode string) Option {
 		configs.SystemInfo.Mode = mode
 	}
 }
-
-func WithServerType(types ...string) Option {
-	return func(o *option) {
-		o.ServiceType = types
-	}
-}
