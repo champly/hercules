@@ -86,7 +86,7 @@ func (a *ApiServer) GeneralHandler() gin.HandlerFunc {
 			}
 		}
 
-		h := a.GetRouter(c.Request.URL.String(), c.Request.Method)
+		h := a.GetRouter(c.Request.URL.Path, c.Request.Method)
 		if h == nil {
 			c.Status(http.StatusNotFound)
 			return
