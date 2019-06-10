@@ -1,23 +1,29 @@
 package ctxs
 
 import (
+	"encoding/json"
 	"io/ioutil"
 
 	"github.com/gin-gonic/gin"
 )
 
-type Request struct {
+type herContext struct {
 	*gin.Context
 }
 
-func NewRequest(ctx *gin.Context) *Request {
-	return &Request{ctx}
+func NewHerContext(c *gin.Context) *herContext {
+	return &herContext{c}
 }
 
-func (r *Request) GetBody() string {
-	b, err := ioutil.ReadAll(r.Request.Body)
+func (h *herContext) GetBody() string {
+	b, err := ioutil.ReadAll(h.Request.Body)
 	if err != nil {
 		return ""
 	}
 	return string(b)
+}
+
+func (h *herContext) Bind(d interface{}) error {
+	body := h.GetBody()
+	return json.Unmarshal([]byte(body), d)
 }

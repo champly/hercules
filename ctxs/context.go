@@ -8,7 +8,7 @@ import (
 )
 
 type Context struct {
-	*gin.Context
+	*herContext
 	Log     ILog
 	ToolBox component.IToolBox
 }
@@ -27,7 +27,7 @@ func init() {
 
 func GetContext(c *gin.Context) *Context {
 	ctx := contextPool.Get().(*Context)
-	ctx.Context = c
+	ctx.herContext = NewHerContext(c)
 	ctx.Log = NewLogger()
 	return ctx
 }
