@@ -1,7 +1,6 @@
 package ctxs
 
 import (
-	"encoding/json"
 	"io/ioutil"
 
 	"github.com/gin-gonic/gin"
@@ -21,9 +20,4 @@ func (h *herContext) GetBody() string {
 		return ""
 	}
 	return string(b)
-}
-
-func (h *herContext) Bind(d interface{}) error {
-	body := h.GetBody()
-	return json.Unmarshal([]byte(body), d)
 }
