@@ -95,12 +95,26 @@ func (a *ApiServer) GeneralHandler() gin.HandlerFunc {
 		defer ctx.Put()
 
 		if a.handing != nil {
+			// handing
 			if err := a.handing(ctx); err != nil {
+				ctx.Log.Error(err.Error())
+				if strings.EqualFold(configs.SystemInfo.Mode, "debug") {
+					ctx.JSON(http.StatusInternalServerError, err.Error())
+					return
+				}
+				ctx.Status(http.StatusInternalServerError)
 				return
 			}
 		}
+
+		// Handler
 		if err := h(ctx); err != nil {
-			fmt.Println(err)
+			ctx.Log.Error(err.Error())
+			if strings.EqualFold(configs.SystemInfo.Mode, "debug") {
+				ctx.JSON(http.StatusInternalServerError, err.Error())
+				return
+			}
+			ctx.Status(http.StatusInternalServerError)
 		}
 		return
 	}
