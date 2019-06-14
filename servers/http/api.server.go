@@ -102,7 +102,7 @@ func (a *ApiServer) GeneralHandler() gin.HandlerFunc {
 					ctx.JSON(http.StatusInternalServerError, err.Error())
 					return
 				}
-				ctx.Status(http.StatusInternalServerError)
+				ctx.JSON(http.StatusInternalServerError, "系统繁忙")
 				return
 			}
 		}
@@ -114,7 +114,7 @@ func (a *ApiServer) GeneralHandler() gin.HandlerFunc {
 				ctx.JSON(http.StatusInternalServerError, err.Error())
 				return
 			}
-			ctx.Status(http.StatusInternalServerError)
+			ctx.JSON(http.StatusInternalServerError, "系统繁忙")
 		}
 		return
 	}
