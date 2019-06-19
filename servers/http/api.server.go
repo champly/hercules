@@ -49,8 +49,10 @@ func (a *ApiServer) getRouter(routers []servers.Router) error {
 	for _, r := range routers {
 		handler, ok := r.Handler.(func(*ctxs.Context) error)
 		if !ok {
-			v := reflect.TypeOf(r.Handler)
-			panic(v.Elem().Name() + " handler is not func(ctx *ctxs.Context)error")
+			if reflect.TypeOf(r.Handler).Kind() != reflect.Ptr {
+				panic(reflect.TypeOf(r.Handler).Elem().Name() + " handler is not func(ctx *ctxs.Context)error")
+			}
+			panic(reflect.TypeOf(r.Handler).Name() + " handler is not func(ctx *ctxs.Context)error")
 		}
 		for _, m := range strings.Split(r.Method, "|") {
 			if _, ok := a.services[r.Name]; !ok {

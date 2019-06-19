@@ -41,8 +41,10 @@ func (c *CronServer) AddFunc() error {
 		for _, task := range c.routers {
 			handler, ok := task.Handler.(func(*ctxs.Context) error)
 			if !ok {
-				v := reflect.TypeOf(task.Handler)
-				panic(v.Elem().Name() + " handler is not func(ctx *ctxs.Context)error")
+				if reflect.TypeOf(task.Handler).Kind() != reflect.Ptr {
+					panic(reflect.TypeOf(task.Handler).Elem().Name() + " handler is not func(ctx *ctxs.Context)error")
+				}
+				panic(reflect.TypeOf(task.Handler).Name() + " handler is not func(ctx *ctxs.Context)error")
 			}
 
 			if !strings.EqualFold(task.Name, taskConf.Name) {
