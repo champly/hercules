@@ -24,6 +24,7 @@ type Hercules struct {
 	cl       chan bool
 	services map[string]servers.IServers
 	handing  func(ctx *ctxs.Context) error
+	initf    func(ctx *ctxs.Context) error
 }
 
 func New(opts ...Option) *Hercules {
@@ -71,6 +72,15 @@ func (h *Hercules) startService() {
 		fmt.Println(t + " start success")
 		h.services[t] = server
 	}
+	if h.initf == nil {
+		return
+	}
+
+	ctx := ctxs.GetDContext()
+	if err := h.initf(ctx); err != nil {
+		panic("Init service filed:" + err.Error())
+	}
+	ctx.Put()
 }
 
 func (h *Hercules) startHealthService() {
@@ -103,6 +113,10 @@ func (h *Hercules) ShutDown() {
 	case <-h.cl:
 		return
 	}
+}
+
+func (h *Hercules) Init(f func(*ctxs.Context) error) {
+	h.initf = f
 }
 
 func (h *Hercules) Handing(f func(*ctxs.Context) error) {
