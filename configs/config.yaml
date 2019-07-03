@@ -40,11 +40,9 @@ httpserver:
         - 'Access-Control-Expose-Headers': '__jwt__'
         enable: false
     address: :8080
-    status: start
 
 # cron server config
 cronserver:
-    status: start
     tasklist:
     - name: 'auto.create.data'
       time: '@every 10s'

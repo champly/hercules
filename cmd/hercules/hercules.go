@@ -61,7 +61,11 @@ func (h *Hercules) Start() {
 
 func (h *Hercules) startService() {
 	for _, t := range strings.Split(configs.SystemInfo.Type, "|") {
-		server, err := servers.NewRegistryServer(t, h.GetRouters(t), h.handing)
+		rl := h.GetRouters(t)
+		if len(rl) == 0 {
+			continue
+		}
+		server, err := servers.NewRegistryServer(t, rl, h.handing)
 		if err != nil {
 			panic(err)
 		}

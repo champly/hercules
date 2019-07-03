@@ -78,10 +78,6 @@ func (c *CronServer) AddFunc() error {
 }
 
 func (c *CronServer) Start() error {
-	if !strings.EqualFold(configs.CronServerInfo.Status, "start") {
-		return fmt.Errorf("cron server config is: %s", configs.CronServerInfo.Status)
-	}
-
 	go c.server.Start()
 	return nil
 }

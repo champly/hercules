@@ -47,11 +47,9 @@ type httpserver struct {
 		Header map[string]string `json:"header"`
 	} `json:"cors"`
 	Address string `json:"address"`
-	Status  string `json:"status"`
 }
 
 type cronserver struct {
-	Status   string `json:"status"`
 	TaskList []struct {
 		Name string `json:"name"`
 		Time string `json:"time"`

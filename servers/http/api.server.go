@@ -104,7 +104,7 @@ func (a *ApiServer) GeneralHandler() gin.HandlerFunc {
 					ctx.JSON(http.StatusInternalServerError, err.Error())
 					return
 				}
-				ctx.JSON(http.StatusInternalServerError, "系统繁忙")
+				ctx.JSON(http.StatusInternalServerError, "system busy")
 				return
 			}
 		}
@@ -116,7 +116,7 @@ func (a *ApiServer) GeneralHandler() gin.HandlerFunc {
 				ctx.JSON(http.StatusInternalServerError, err.Error())
 				return
 			}
-			ctx.JSON(http.StatusInternalServerError, "系统繁忙")
+			ctx.JSON(http.StatusInternalServerError, "system busy")
 		}
 		return
 	}
@@ -132,10 +132,6 @@ func (a *ApiServer) GetRouter(router string, method string) func(*ctxs.Context) 
 }
 
 func (a *ApiServer) Start() error {
-	if !strings.EqualFold(configs.HttpServerInfo.Status, "start") {
-		return fmt.Errorf("http server config is: %s", configs.HttpServerInfo.Status)
-	}
-
 	go func() {
 		if err := a.server.ListenAndServe(); err != nil {
 			fmt.Println(err)
