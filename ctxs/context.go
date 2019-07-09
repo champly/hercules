@@ -1,6 +1,9 @@
 package ctxs
 
 import (
+	"bytes"
+	"io/ioutil"
+	"net/http"
 	"sync"
 
 	"github.com/champly/hercules/ctxs/component"
@@ -32,8 +35,19 @@ func GetContext(c *gin.Context) *Context {
 	return ctx
 }
 
-func GetDContext() *Context {
+func GetCronContext() *Context {
 	ctx := contextPool.Get().(*Context)
+	ctx.Log = NewLogger()
+	return ctx
+}
+
+func GetMQContext(msg string) *Context {
+	ctx := contextPool.Get().(*Context)
+	ctx.herContext = NewHerContext(&gin.Context{
+		Request: &http.Request{
+			Body: ioutil.NopCloser(bytes.NewBuffer([]byte(msg))),
+		},
+	})
 	ctx.Log = NewLogger()
 	return ctx
 }

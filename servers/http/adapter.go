@@ -1,6 +1,7 @@
 package http
 
 import (
+	"github.com/champly/hercules/configs"
 	"github.com/champly/hercules/servers"
 )
 
@@ -11,5 +12,5 @@ func (a *apiServerAdapter) Resolve(router []servers.Router, handing interface{})
 }
 
 func init() {
-	servers.Registry("api", &apiServerAdapter{})
+	servers.Registry(configs.ServerTypeAPI, &apiServerAdapter{})
 }

@@ -5,6 +5,8 @@ import (
 
 	"github.com/champly/hercules/configs"
 	_ "github.com/champly/hercules/servers/cron"
+	_ "github.com/champly/hercules/servers/http"
+	_ "github.com/champly/hercules/servers/mq"
 	"github.com/spf13/viper"
 )
 

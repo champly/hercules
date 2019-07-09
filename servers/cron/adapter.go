@@ -1,6 +1,7 @@
 package cron
 
 import (
+	"github.com/champly/hercules/configs"
 	"github.com/champly/hercules/servers"
 )
 
@@ -11,5 +12,5 @@ func (c *cronServerAdapter) Resolve(routers []servers.Router, handing interface{
 }
 
 func init() {
-	servers.Registry("cron", &cronServerAdapter{})
+	servers.Registry(configs.ServerTypeCron, &cronServerAdapter{})
 }

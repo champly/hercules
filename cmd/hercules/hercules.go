@@ -80,7 +80,7 @@ func (h *Hercules) startService() {
 		return
 	}
 
-	ctx := ctxs.GetDContext()
+	ctx := ctxs.GetCronContext()
 	if err := h.initf(ctx); err != nil {
 		panic("Init service filed:" + err.Error())
 	}

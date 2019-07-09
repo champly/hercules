@@ -53,7 +53,7 @@ func (c *CronServer) AddFunc() error {
 
 			isExist = true
 			err := c.server.AddFunc(taskConf.Time, func() {
-				ctx := ctxs.GetDContext()
+				ctx := ctxs.GetCronContext()
 				defer ctx.Put()
 
 				if c.handing != nil {

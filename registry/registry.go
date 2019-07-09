@@ -8,6 +8,7 @@ import (
 type IServiceRegistry interface {
 	API(pattern string, handle interface{})
 	Cron(name string, handle interface{})
+	MQ(name string, handle interface{})
 	GetRouters(st string) []servers.Router
 }
 
@@ -39,6 +40,17 @@ func (s *ServiceRegistry) Cron(pattern string, r interface{}) {
 	}
 
 	s.buildCronRouterByFunc(pattern, r)
+	return
+}
+
+func (s *ServiceRegistry) MQ(pattern string, r interface{}) {
+	constructor, ok := r.(func() interface{})
+	if ok {
+		s.buildMQRouterByObj(pattern, constructor())
+		return
+	}
+
+	s.buildMQRouterByFunc(pattern, r)
 	return
 }
 
