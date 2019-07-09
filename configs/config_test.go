@@ -17,4 +17,5 @@ func TestSetup(t *testing.T) {
 	t.Logf("%+v\n", HttpServerInfo)
 	t.Logf("%+v\n", CronServerInfo)
 	t.Logf("%+v\n", DBInfo)
+	t.Logf("%+v\n", MQServer)
 }

@@ -11,6 +11,7 @@ type Config struct {
 	DB         db         `json:"db"`
 	HttpServer httpserver `json:"httpserver"`
 	CronServer cronserver `json:"cronserver"`
+	MQServer   mqserver   `json:"mqserver"`
 }
 
 type plat struct {
@@ -56,6 +57,12 @@ type cronserver struct {
 	} `json:"tasklist"`
 }
 
+type mqserver struct {
+	Addr     string
+	Password string
+	DB       int
+}
+
 var (
 	PlatInfo       = &plat{}
 	SystemInfo     = &system{}
@@ -63,6 +70,7 @@ var (
 	HttpServerInfo = &httpserver{}
 	CronServerInfo = &cronserver{}
 	DBInfo         = &db{}
+	MQServer       = &mqserver{}
 )
 
 func setDefault() {
@@ -86,4 +94,5 @@ func Setup() {
 	HttpServerInfo = &config.HttpServer
 	CronServerInfo = &config.CronServer
 	DBInfo = &config.DB
+	MQServer = &config.MQServer
 }

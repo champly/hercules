@@ -16,4 +16,5 @@ const (
 const (
 	ServerTypeAPI  = "api"
 	ServerTypeCron = "cron"
+	ServerTypeMQ   = "mq"
 )

@@ -1,48 +1,54 @@
 # platinfo config
 plat:
-    name: plat-test
+  name: plat-test
 
 # systeminfo config
 system:
-    name: system-test
-    # mode: debug/release
-    mode: release
-    # api/cron
-    type: api|cron
-    health: true
+  name: system-test
+  # mode: debug/release
+  mode: release
+  # api/cron/mq
+  type: api|cron|mq
+  health: true
 
 # logger config
 logger:
-    # panic/fatal/error/warn|warning/info/debug/trace
-    level: info
-    # stdout/file
-    out: stdout
+  # panic/fatal/error/warn|warning/info/debug/trace
+  level: info
+  # stdout/file
+  out: stdout
 
 # database config
 db:
-    list:
-    - name: 'kops'
+  list:
+    - name: "kops"
       default: true
-      provider: 'mysql'
-      connstring: 'root:123456@tcp(127.0.0.1:3306)/kops'
+      provider: "mysql"
+      connstring: "root:123456@tcp(127.0.0.1:3306)/kops"
       maxopen: 30
       maxidle: 10
       maxlisttime: 600
 
 # http server config
 httpserver:
-    cors:
-        header:
-        - 'Access-Control-Allow-Origin': 'http://10.12.194.50:8081' 
-        - 'Access-Control-Allow-Credentials': 'true'
-        - 'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,PATCH,OPTIONS'
-        - 'Access-Control-Allow-Headers': '__jwt__'
-        - 'Access-Control-Expose-Headers': '__jwt__'
-        enable: false
-    address: :8080
+  cors:
+    header:
+      - "Access-Control-Allow-Origin": "http://10.12.194.50:8081"
+      - "Access-Control-Allow-Credentials": "true"
+      - "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,PATCH,OPTIONS"
+      - "Access-Control-Allow-Headers": "__jwt__"
+      - "Access-Control-Expose-Headers": "__jwt__"
+    enable: false
+  address: :8080
 
 # cron server config
 cronserver:
-    tasklist:
-    - name: 'auto.create.data'
-      time: '@every 10s'
+  tasklist:
+    - name: "auto.create.data"
+      time: "@every 10s"
+
+# mq server config
+mqserver:
+  addr: "10.13.3.2:6379"
+  password: ""
+  db: 0
