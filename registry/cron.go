@@ -1,4 +1,4 @@
-package component
+package registry
 
 import (
 	"reflect"
@@ -26,6 +26,7 @@ func (s *ServiceRegistry) buildCronRouterByObj(pattern string, constrObj interfa
 	s.services[configs.ServerTypeCron] = routers
 	return
 }
+
 func (s *ServiceRegistry) buildCronRouterByFunc(pattern string, f interface{}) {
 	routers, ok := s.services[configs.ServerTypeCron]
 	if !ok {

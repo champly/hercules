@@ -14,5 +14,7 @@ type ToolBox struct {
 }
 
 func NewToolBox() IToolBox {
-	return &ToolBox{ComponentDB: NewComponentDB()}
+	return &ToolBox{
+		ComponentDB: NewComponentDB(),
+	}
 }

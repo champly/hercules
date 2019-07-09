@@ -9,18 +9,18 @@ import (
 	"time"
 
 	"github.com/champly/hercules/cmd/hercules/status"
-	"github.com/champly/hercules/component"
 	"github.com/champly/hercules/configs"
 	"github.com/champly/hercules/ctxs"
 	_ "github.com/champly/hercules/init"
+	"github.com/champly/hercules/registry"
 	"github.com/champly/hercules/servers"
 	"github.com/champly/hercules/servers/http"
 )
 
 type Hercules struct {
 	*option
-	component.IServiceRegistry
-	component.IComponentDB
+	registry.IServiceRegistry
+	// component.IComponentDB
 	cl       chan bool
 	services map[string]servers.IServers
 	handing  func(ctx *ctxs.Context) error
@@ -30,10 +30,10 @@ type Hercules struct {
 func New(opts ...Option) *Hercules {
 	h := &Hercules{
 		option:           &option{},
-		IServiceRegistry: component.NewServiceRegistry(),
-		IComponentDB:     component.NewComponentDB(),
-		cl:               make(chan bool),
-		services:         map[string]servers.IServers{},
+		IServiceRegistry: registry.NewServiceRegistry(),
+		// IComponentDB:     component.NewComponentDB(),
+		cl:       make(chan bool),
+		services: map[string]servers.IServers{},
 	}
 	for _, opt := range opts {
 		opt(h.option)

@@ -1,6 +1,9 @@
-package component
+package registry
 
-import "github.com/champly/hercules/servers"
+import (
+	"github.com/champly/hercules/ctxs/component"
+	"github.com/champly/hercules/servers"
+)
 
 type IServiceRegistry interface {
 	API(pattern string, handle interface{})
@@ -10,11 +13,11 @@ type IServiceRegistry interface {
 
 type ServiceRegistry struct {
 	services map[string][]servers.Router
-	toolBox  IToolBox
+	toolBox  component.IToolBox
 }
 
 func NewServiceRegistry() *ServiceRegistry {
-	return &ServiceRegistry{services: make(map[string][]servers.Router), toolBox: NewToolBox()}
+	return &ServiceRegistry{services: make(map[string][]servers.Router), toolBox: component.NewToolBox()}
 }
 
 func (s *ServiceRegistry) API(pattern string, r interface{}) {

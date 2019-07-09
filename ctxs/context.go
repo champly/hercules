@@ -3,7 +3,7 @@ package ctxs
 import (
 	"sync"
 
-	"github.com/champly/hercules/component"
+	"github.com/champly/hercules/ctxs/component"
 	"github.com/gin-gonic/gin"
 )
 
