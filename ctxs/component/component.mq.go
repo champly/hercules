@@ -55,7 +55,6 @@ func (m *ComponentMQ) getClient() {
 func (m *ComponentMQ) Produce(queueName, value string) error {
 	m.getClient()
 
-	fmt.Println("send msg==================")
 	cmd := m.client.LPush(queueName, value)
 	_, err := cmd.Result()
 	if err != nil {
