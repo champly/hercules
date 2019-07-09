@@ -23,23 +23,23 @@ type ComponentDB struct {
 
 var (
 	componentDB *ComponentDB
-	lock        sync.Mutex
+	lockDB      sync.Mutex
 )
 
 func NewComponentDB() *ComponentDB {
 	if componentDB != nil {
 		return componentDB
 	}
-	lock.Lock()
-	defer lock.Unlock()
+	lockDB.Lock()
+	defer lockDB.Unlock()
 
 	if componentDB != nil {
 		return componentDB
 	}
 
-	if configs.DBInfo == nil || len(configs.DBInfo.List) < 1 {
-		panic("db config is empty, can't use db component")
-	}
+	// if configs.DBInfo == nil || len(configs.DBInfo.List) < 1 {
+	// 	panic("db config is empty, can't use db component")
+	// }
 	componentDB = &ComponentDB{
 		pool: cmap.New(2),
 	}

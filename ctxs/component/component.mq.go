@@ -1,5 +1,65 @@
 package component
 
-type IMQ interface {
+import (
+	"fmt"
+	"sync"
+
+	"github.com/champly/hercules/configs"
+	"github.com/go-redis/redis"
+)
+
+type IComponentMQ interface {
 	Produce(queueName, value string) error
+}
+
+type ComponentMQ struct {
+	client *redis.Client
+}
+
+var (
+	componentMQ *ComponentMQ
+	lockMQ      sync.Mutex
+)
+
+func NewComponentMQ() *ComponentMQ {
+	if componentMQ != nil {
+		return componentMQ
+	}
+	lockMQ.Lock()
+	defer lockMQ.Unlock()
+
+	if componentMQ != nil {
+		return componentMQ
+	}
+	componentMQ = &ComponentMQ{}
+	return componentMQ
+}
+
+func (m *ComponentMQ) getClient() {
+	if m.client != nil {
+		return
+	}
+
+	client := redis.NewClient(&redis.Options{
+		Addr:     configs.MQServer.Addr,
+		Password: configs.MQServer.Password,
+		DB:       configs.MQServer.DB,
+	})
+	_, err := client.Ping().Result()
+	if err != nil {
+		panic("config mqserver reture err:" + err.Error())
+	}
+	m.client = client
+}
+
+func (m *ComponentMQ) Produce(queueName, value string) error {
+	m.getClient()
+
+	fmt.Println("send msg==================")
+	cmd := m.client.LPush(queueName, value)
+	_, err := cmd.Result()
+	if err != nil {
+		return fmt.Errorf("lpush %s %s fail:err:%+v", queueName, value, err)
+	}
+	return nil
 }

@@ -3,6 +3,7 @@ package mq
 import (
 	"fmt"
 	"reflect"
+	"sync"
 	"time"
 
 	"github.com/champly/hercules/configs"
@@ -12,10 +13,11 @@ import (
 )
 
 type MQServer struct {
-	client  *redis.Client
-	handing func(*ctxs.Context) error
-	servers map[string]func(*ctxs.Context) error
-	stopCh  chan struct{}
+	client   *redis.Client
+	handing  func(*ctxs.Context) error
+	servers  map[string]func(*ctxs.Context) error
+	stopCh   chan struct{}
+	stopSucc chan struct{}
 }
 
 func NewMQServer(routers []servers.Router, h interface{}) (*MQServer, error) {
@@ -24,9 +26,10 @@ func NewMQServer(routers []servers.Router, h interface{}) (*MQServer, error) {
 		panic("handing function is not func(ctx *ctxs.Context) error")
 	}
 	mq := &MQServer{
-		handing: handing,
-		servers: make(map[string]func(*ctxs.Context) error),
-		stopCh:  make(chan struct{}),
+		handing:  handing,
+		servers:  make(map[string]func(*ctxs.Context) error),
+		stopCh:   make(chan struct{}),
+		stopSucc: make(chan struct{}),
 	}
 
 	mq.client = redis.NewClient(&redis.Options{
@@ -34,6 +37,10 @@ func NewMQServer(routers []servers.Router, h interface{}) (*MQServer, error) {
 		Password: configs.MQServer.Password,
 		DB:       configs.MQServer.DB,
 	})
+	_, err := mq.client.Ping().Result()
+	if err != nil {
+		panic("config mqserver reture err:" + err.Error())
+	}
 	mq.getRouter(routers)
 	return mq, nil
 }
@@ -52,11 +59,16 @@ func (m *MQServer) getRouter(routers []servers.Router) {
 }
 
 func (m *MQServer) startServer() {
+	wg := sync.WaitGroup{}
+	wg.Add(len(m.servers))
 	for queue, handler := range m.servers {
-		go m.Consume(queue, handler)
+		go func(queue string, handler func(*ctxs.Context) error) {
+			m.Consume(queue, handler)
+			wg.Done()
+		}(queue, handler)
 	}
-	<-m.stopCh
-	time.Sleep(time.Second * 1)
+	wg.Wait()
+	close(m.stopSucc)
 }
 
 func (m *MQServer) Consume(queueName string, callback func(*ctxs.Context) error) {
@@ -107,7 +119,7 @@ func (m *MQServer) Start() error {
 func (m *MQServer) ShutDown() {
 	close(m.stopCh)
 	m.client.Close()
-	time.Sleep(time.Second * 2)
+	<-m.stopSucc
 	fmt.Println("mq shutdown")
 }
 
