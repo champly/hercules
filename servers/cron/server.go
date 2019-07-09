@@ -62,7 +62,7 @@ func (c *CronServer) AddFunc() error {
 					}
 				}
 				if err := handler(ctx); err != nil {
-					fmt.Println(err)
+					ctx.Log.Error(err)
 				}
 			})
 			if err != nil {

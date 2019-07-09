@@ -105,7 +105,7 @@ func (m *MQServer) Consume(queueName string, callback func(*ctxs.Context) error)
 				}
 			}
 			if err := callback(ctx); err != nil {
-				fmt.Println(err)
+				ctx.Log.Error(err)
 			}
 		}
 	}
