@@ -8,6 +8,7 @@ import (
 
 	"github.com/champly/hercules/ctxs/component"
 	"github.com/gin-gonic/gin"
+	"gopkg.in/go-playground/validator.v9"
 )
 
 type Context struct {
@@ -16,7 +17,10 @@ type Context struct {
 	ToolBox component.IToolBox
 }
 
-var contextPool *sync.Pool
+var (
+	contextPool *sync.Pool
+	validate    *validator.Validate
+)
 
 func init() {
 	contextPool = &sync.Pool{
@@ -26,6 +30,7 @@ func init() {
 			}
 		},
 	}
+	validate = validator.New()
 }
 
 func GetContext(c *gin.Context) *Context {
@@ -54,4 +59,8 @@ func GetMQContext(msg string) *Context {
 
 func (c *Context) Put() {
 	contextPool.Put(c)
+}
+
+func (c *Context) CheckStruct(data interface{}) error {
+	return validate.Struct(data)
 }
