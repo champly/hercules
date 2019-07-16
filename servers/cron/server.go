@@ -1,7 +1,6 @@
 package cron
 
 import (
-	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -36,22 +35,22 @@ func NewCronServer(routers []servers.Router, h interface{}) (*CronServer, error)
 func (c *CronServer) AddFunc() error {
 	taskListConfig := configs.CronServerInfo.TaskList
 
-	for _, taskConf := range taskListConfig {
-		isExist := false
-		for _, task := range c.routers {
-			handler, ok := task.Handler.(func(*ctxs.Context) error)
-			if !ok {
-				if reflect.TypeOf(task.Handler).Kind() != reflect.Ptr {
-					panic(reflect.TypeOf(task.Handler).Elem().Name() + " handler is not func(ctx *ctxs.Context)error")
-				}
-				panic(reflect.TypeOf(task.Handler).Name() + " handler is not func(ctx *ctxs.Context)error")
+	for _, task := range c.routers {
+		handler, ok := task.Handler.(func(*ctxs.Context) error)
+		if !ok {
+			if reflect.TypeOf(task.Handler).Kind() != reflect.Ptr {
+				panic(reflect.TypeOf(task.Handler).Elem().Name() + " handler is not func(ctx *ctxs.Context)error")
 			}
+			panic(reflect.TypeOf(task.Handler).Name() + " handler is not func(ctx *ctxs.Context)error")
+		}
 
+		isExists := false
+		for _, taskConf := range taskListConfig {
 			if !strings.EqualFold(task.Name, taskConf.Name) {
 				continue
 			}
 
-			isExist = true
+			isExists = true
 			err := c.server.AddFunc(taskConf.Time, func() {
 				ctx := ctxs.GetCronContext()
 				defer ctx.Put()
@@ -69,8 +68,23 @@ func (c *CronServer) AddFunc() error {
 				return err
 			}
 		}
-		if !isExist {
-			return errors.New(taskConf.Name + " cron task is not exist")
+		if !isExists {
+			err := c.server.AddFunc("@every 2s", func() {
+				ctx := ctxs.GetCronContext()
+				defer ctx.Put()
+
+				if c.handing != nil {
+					if err := c.handing(ctx); err != nil {
+						return
+					}
+				}
+				if err := handler(ctx); err != nil {
+					ctx.Log.Error(err)
+				}
+			})
+			if err != nil {
+				return err
+			}
 		}
 	}
 
