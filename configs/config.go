@@ -28,6 +28,7 @@ type system struct {
 type logger struct {
 	Level string `json:"level"`
 	Out   string `json:"out"`
+	Debug bool   `json:"debug"`
 }
 
 type db struct {
@@ -77,7 +78,7 @@ func setDefault() {
 	viper.SetDefault("plat", plat{Name: "hercules-plat"})
 	viper.SetDefault("system", system{Name: "hercules-system", Mode: "debug", Health: true})
 	viper.SetDefault("httpserver", httpserver{Address: ":8080"})
-	viper.SetDefault("logger", logger{Level: "all", Out: "stdio"})
+	viper.SetDefault("logger", logger{Level: "all", Out: "stdio", Debug: true})
 }
 
 func Setup() {

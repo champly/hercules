@@ -17,6 +17,8 @@ logger:
   level: info
   # stdout/file
   out: stdout
+  # debug mode
+  debug: true
 
 # database config
 db:

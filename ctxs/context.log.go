@@ -44,7 +44,14 @@ func newLogger() *logrus.Logger {
 		},
 		Hooks: make(logrus.LevelHooks),
 	}
+	if configs.LoggerInfo.Debug {
+		logger = &logrus.Logger{
+			Formatter: &Formatter{},
+			Hooks:     make(logrus.LevelHooks),
+		}
+	}
 	logger.AddHook(NewFileSplitHook())
+
 	lev, err := logrus.ParseLevel(configs.LoggerInfo.Level)
 	if err != nil {
 		panic(err)

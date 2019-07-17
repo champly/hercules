@@ -28,7 +28,7 @@ type FileSplitHook struct {
 
 func NewFileSplitHook() *FileSplitHook {
 	return &FileSplitHook{
-		sid: tool.GetGUID(),
+		sid: tool.GetGUID()[:8],
 	}
 }
 
