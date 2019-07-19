@@ -8,6 +8,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/champly/hercules/cmd/hercules/initialize"
 	"github.com/champly/hercules/cmd/hercules/status"
 	"github.com/champly/hercules/configs"
 	"github.com/champly/hercules/ctxs"
@@ -42,6 +43,8 @@ func New(opts ...Option) *Hercules {
 }
 
 func (h *Hercules) Start() {
+	initialize.Initialize()
+
 	// start services
 	h.startService()
 
