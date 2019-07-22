@@ -98,6 +98,7 @@ func (m *MQServer) Consume(queueName string, callback func(*ctxs.Context) error)
 			}
 
 			ctx := ctxs.GetMQContext(msg.Data)
+			ctx.Type = ctxs.ServerTypeMQ
 			defer ctx.Put()
 			if m.handing != nil {
 				if err := m.handing(ctx); err != nil {

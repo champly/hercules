@@ -94,17 +94,23 @@ func (a *ApiServer) GeneralHandler() gin.HandlerFunc {
 			return
 		}
 		ctx := ctxs.GetContext(c)
+		ctx.Type = ctxs.ServerTypeHTTP
 		defer ctx.Put()
 
 		if a.handing != nil {
 			// handing
 			if err := a.handing(ctx); err != nil {
 				ctx.Log.Error(err.Error())
-				if strings.EqualFold(configs.SystemInfo.Mode, "debug") {
-					ctx.JSON(http.StatusInternalServerError, err.Error())
+
+				if ctx.Writer.Status() != 200 {
 					return
 				}
-				ctx.JSON(http.StatusInternalServerError, "system busy")
+
+				respMsg := "system busy"
+				if strings.EqualFold(configs.SystemInfo.Mode, "debug") {
+					respMsg = err.Error()
+				}
+				ctx.JSON(http.StatusInternalServerError, respMsg)
 				return
 			}
 		}
@@ -112,11 +118,17 @@ func (a *ApiServer) GeneralHandler() gin.HandlerFunc {
 		// Handler
 		if err := h(ctx); err != nil {
 			ctx.Log.Error(err.Error())
-			if strings.EqualFold(configs.SystemInfo.Mode, "debug") {
-				ctx.JSON(http.StatusInternalServerError, err.Error())
+
+			if ctx.Writer.Status() != 200 {
 				return
 			}
-			ctx.JSON(http.StatusInternalServerError, "system busy")
+
+			respMsg := "system busy"
+			if strings.EqualFold(configs.SystemInfo.Mode, "debug") {
+				respMsg = err.Error()
+			}
+			ctx.JSON(http.StatusInternalServerError, respMsg)
+			return
 		}
 		return
 	}

@@ -53,6 +53,7 @@ func (c *CronServer) AddFunc() error {
 			isExists = true
 			err := c.server.AddFunc(taskConf.Time, func() {
 				ctx := ctxs.GetCronContext()
+				ctx.Type = ctxs.ServerTypeCron
 				defer ctx.Put()
 
 				if c.handing != nil {
@@ -71,6 +72,7 @@ func (c *CronServer) AddFunc() error {
 		if !isExists {
 			err := c.server.AddFunc("@every 2s", func() {
 				ctx := ctxs.GetCronContext()
+				ctx.Type = ctxs.ServerTypeCron
 				defer ctx.Put()
 
 				if c.handing != nil {

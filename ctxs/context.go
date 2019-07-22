@@ -11,10 +11,17 @@ import (
 	"gopkg.in/go-playground/validator.v9"
 )
 
+const (
+	ServerTypeHTTP = "http"
+	ServerTypeCron = "cron"
+	ServerTypeMQ   = "mq"
+)
+
 type Context struct {
 	*herContext
 	Log     ILog
 	ToolBox component.IToolBox
+	Type    string
 }
 
 var (
