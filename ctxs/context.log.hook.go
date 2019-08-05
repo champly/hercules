@@ -71,7 +71,10 @@ func getStdOut(t string) (io.Writer, error) {
 			if len(t) < 10 {
 				break
 			}
-			fp, err := os.OpenFile(fmt.Sprintf("%s.log", t), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+			if err := os.Mkdir("log", 0755); err != nil {
+				return nil, errors.New("logger out(file) mkdir path file:" + err.Error())
+			}
+			fp, err := os.OpenFile(fmt.Sprintf("log/%s.log", t), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 			if err != nil {
 				return nil, errors.New("logger out(file) create log file err:" + err.Error())
 			}
