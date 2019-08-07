@@ -52,7 +52,6 @@ func getStdOut(t string) (io.Writer, error) {
 	}
 	lock.Lock()
 	defer lock.Unlock()
-
 	if fp, ok = out[t]; ok {
 		return fp, nil
 	}
@@ -71,7 +70,7 @@ func getStdOut(t string) (io.Writer, error) {
 			if len(t) < 10 {
 				break
 			}
-			if err := os.Mkdir("log", 0755); err != nil {
+			if err := os.Mkdir("log", 0755); err != nil && !strings.EqualFold("file exists", err.Error()) {
 				return nil, errors.New("logger out(file) mkdir path file:" + err.Error())
 			}
 			fp, err := os.OpenFile(fmt.Sprintf("log/%s.log", t), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
