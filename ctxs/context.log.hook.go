@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/champly/hercules/configs"
 	"github.com/champly/lib4go/tool"
@@ -14,8 +15,9 @@ import (
 )
 
 var (
-	lock sync.Mutex
-	out  map[string]io.Writer
+	lock       sync.Mutex
+	out        map[string]io.Writer
+	timeformat = "2006-01-02"
 )
 
 func init() {
@@ -37,7 +39,7 @@ func (f *FileSplitHook) Levels() []logrus.Level {
 }
 
 func (f *FileSplitHook) Fire(e *logrus.Entry) (err error) {
-	e.Logger.Out, err = getStdOut(e.Time.Format("2006-01-02"))
+	e.Logger.Out, err = getStdOut(e.Time.Format(timeformat))
 	if err != nil {
 		return err
 	}
@@ -46,15 +48,12 @@ func (f *FileSplitHook) Fire(e *logrus.Entry) (err error) {
 }
 
 func getStdOut(t string) (io.Writer, error) {
-	fp, ok := out[t]
-	if ok {
-		return fp, nil
-	}
 	lock.Lock()
 	defer lock.Unlock()
-	if fp, ok = out[t]; ok {
+	if fp, ok := out[t]; ok {
 		return fp, nil
 	}
+	delete(out, time.Now().Add(-time.Second*60*60*24*2).Format(timeformat))
 
 	if strings.Trim(configs.LoggerInfo.Out, " ") == "" {
 		out[t] = os.Stdout
@@ -70,7 +69,7 @@ func getStdOut(t string) (io.Writer, error) {
 			if len(t) < 10 {
 				break
 			}
-			if err := os.Mkdir("log", 0755); err != nil && !strings.EqualFold("file exists", err.Error()) {
+			if err := os.Mkdir("log", 0755); err != nil && !strings.Contains(err.Error(), "file exists") {
 				return nil, errors.New("logger out(file) mkdir path file:" + err.Error())
 			}
 			fp, err := os.OpenFile(fmt.Sprintf("log/%s.log", t), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)

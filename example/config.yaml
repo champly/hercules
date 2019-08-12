@@ -16,7 +16,7 @@ logger:
   # panic/fatal/error/warn|warning/info/debug/trace
   level: debug
   # stdout/file
-  out: stdout
+  out: stdout|file
   # debug mode
   debug: true
 
@@ -46,8 +46,8 @@ httpserver:
 # cron server config
 cronserver:
   tasklist:
-    - name: "auto.create.data"
-      time: "@every 10s"
+    - name: "auto.demo"
+      time: "@every 1s"
 
 # mq server config
 mqserver:
