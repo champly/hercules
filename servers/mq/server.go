@@ -97,19 +97,24 @@ func (m *MQServer) Consume(queueName string, callback func(*ctxs.Context) error)
 				continue
 			}
 
-			ctx := ctxs.GetMQContext(msg.Data)
-			ctx.Type = ctxs.ServerTypeMQ
-			defer ctx.Put()
-			if m.handing != nil {
-				if err := m.handing(ctx); err != nil {
-					return
-				}
-			}
-			if err := callback(ctx); err != nil {
-				ctx.Log.Error(err)
-			}
+			go m.do(msg.Data, callback)
 		}
 	}
+}
+
+func (m *MQServer) do(data string, callback func(*ctxs.Context) error) (err error) {
+	ctx := ctxs.GetMQContext(data)
+	ctx.Type = ctxs.ServerTypeMQ
+	defer ctx.Put()
+	if m.handing != nil {
+		if err = m.handing(ctx); err != nil {
+			return
+		}
+	}
+	if err = callback(ctx); err != nil {
+		ctx.Log.Error(err)
+	}
+	return err
 }
 
 func (m *MQServer) Start() error {
