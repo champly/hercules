@@ -1,9 +1,9 @@
 module github.com/champly/hercules
 
-go 1.12
+go 1.13
 
 require (
-	github.com/champly/lib4go v0.0.0-20190904082720-08a19ddbd246
+	github.com/champly/lib4go v0.0.0-20190904092318-696cce4b68d4
 	github.com/fatih/color v1.7.0
 	github.com/gin-gonic/gin v1.4.0
 	github.com/go-playground/locales v0.12.1 // indirect
