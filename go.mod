@@ -3,7 +3,7 @@ module github.com/champly/hercules
 go 1.13
 
 require (
-	github.com/champly/lib4go v0.0.0-20190904093946-a555c5e78e2e
+	github.com/champly/lib4go v0.0.0-20190917094229-9b79e53dd28c
 	github.com/fatih/color v1.7.0
 	github.com/gin-gonic/gin v1.4.0
 	github.com/go-playground/locales v0.12.1 // indirect
@@ -16,5 +16,6 @@ require (
 	github.com/robfig/cron v1.2.0
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/viper v1.4.0
+	golang.org/x/net v0.0.0-20190827160401-ba9fcec4b297 // indirect
 	gopkg.in/go-playground/validator.v9 v9.29.1
 )
