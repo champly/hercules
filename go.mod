@@ -16,6 +16,5 @@ require (
 	github.com/robfig/cron v1.2.0
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/viper v1.4.0
-	golang.org/x/net v0.0.0-20190827160401-ba9fcec4b297 // indirect
 	gopkg.in/go-playground/validator.v9 v9.29.1
 )

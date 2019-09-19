@@ -1,12 +1,11 @@
 package init
 
 import (
-	"fmt"
-
 	"github.com/champly/hercules/configs"
 	_ "github.com/champly/hercules/servers/cron"
 	_ "github.com/champly/hercules/servers/http"
 	_ "github.com/champly/hercules/servers/mq"
+	"github.com/fatih/color"
 	"github.com/spf13/viper"
 )
 
@@ -26,6 +25,6 @@ func initConfig() {
 		panic("load config file error:" + err.Error())
 	}
 
-	fmt.Println("Using config file:", viper.ConfigFileUsed())
+	color.HiMagenta("Using config file:%s", viper.ConfigFileUsed())
 	return
 }

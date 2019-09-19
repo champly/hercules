@@ -41,7 +41,7 @@ httpserver:
       - "Access-Control-Allow-Headers": "__jwt__"
       - "Access-Control-Expose-Headers": "__jwt__"
     enable: false
-  address: :8080
+  address: :28080
 
 # cron server config
 cronserver:

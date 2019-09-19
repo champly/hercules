@@ -1,11 +1,7 @@
 package hercules
 
 import (
-	"fmt"
-	"os"
-	"os/signal"
 	"strings"
-	"syscall"
 	"time"
 
 	"github.com/champly/hercules/cmd/hercules/initialize"
@@ -13,9 +9,11 @@ import (
 	"github.com/champly/hercules/configs"
 	"github.com/champly/hercules/ctxs"
 	_ "github.com/champly/hercules/init"
+	"github.com/champly/hercules/pkg/signal"
 	"github.com/champly/hercules/registry"
 	"github.com/champly/hercules/servers"
 	"github.com/champly/hercules/servers/http"
+	"github.com/fatih/color"
 )
 
 type Hercules struct {
@@ -53,13 +51,10 @@ func (h *Hercules) Start() {
 		h.startHealthService()
 	}
 
-	sign := make(chan os.Signal)
-	signal.Notify(sign, os.Interrupt, os.Kill, syscall.SIGTERM)
-	select {
-	case <-sign:
-		h.ShutDown()
-	}
-	fmt.Println("关闭成功")
+	stop := signal.SetupSignalHandler()
+	<-stop
+	h.ShutDown()
+	color.HiMagenta("关闭成功")
 }
 
 func (h *Hercules) startService() {
@@ -73,10 +68,10 @@ func (h *Hercules) startService() {
 			panic(err)
 		}
 		if err = server.Start(); err != nil {
-			fmt.Println(t+" start fail:", err)
+			color.HiRed(t+" start fail:", err)
 			continue
 		}
-		fmt.Println(t + " start success")
+		color.HiMagenta(t + " start success")
 		h.services[t] = server
 	}
 	if h.initf == nil {
@@ -99,14 +94,14 @@ func (h *Hercules) startHealthService() {
 	}
 	statusServer.SetAddr(":16666")
 	if err = statusServer.Start(); err != nil {
-		fmt.Println("health server start fail:", err)
+		color.HiRed("health server start fail:", err)
 		return
 	}
-	fmt.Println("health server start success")
+	color.HiMagenta("health server start success")
 }
 
 func (h *Hercules) ShutDown() {
-	fmt.Println("正在关闭服务器")
+	color.HiMagenta("正在关闭服务，请等待，如需强制关闭请继续执行Ctrl+c")
 	go func() {
 		for _, server := range h.services {
 			server.ShutDown()
@@ -116,6 +111,7 @@ func (h *Hercules) ShutDown() {
 
 	select {
 	case <-time.After(time.Second * 30):
+		color.HiRed("关闭30s超时，自动关闭")
 		return
 	case <-h.cl:
 		return

@@ -2,7 +2,6 @@ package http
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"reflect"
 	"strings"
@@ -10,6 +9,7 @@ import (
 	"github.com/champly/hercules/configs"
 	"github.com/champly/hercules/ctxs"
 	"github.com/champly/hercules/servers"
+	"github.com/fatih/color"
 	"github.com/gin-gonic/gin"
 )
 
@@ -40,7 +40,7 @@ func NewApiServer(routers []servers.Router, h interface{}) (*ApiServer, error) {
 		return nil, err
 	}
 	if configs.HttpServerInfo.Cors.Enable {
-		fmt.Println("cors enable")
+		color.HiYellow("cors enable")
 	}
 	return a, nil
 }
@@ -146,7 +146,9 @@ func (a *ApiServer) GetRouter(router string, method string) func(*ctxs.Context) 
 func (a *ApiServer) Start() error {
 	go func() {
 		if err := a.server.ListenAndServe(); err != nil {
-			fmt.Println(err)
+			if !strings.EqualFold(err.Error(), "http: Server closed") {
+				color.HiRed(err.Error())
+			}
 		}
 	}()
 	return nil
@@ -154,11 +156,11 @@ func (a *ApiServer) Start() error {
 
 func (a *ApiServer) ShutDown() {
 	a.server.Shutdown(context.TODO())
-	fmt.Println("http shutdown")
+	color.HiYellow("http shutdown")
 }
 
 func (a *ApiServer) Restart() {
-	fmt.Println("restart")
+	color.HiYellow("http restart")
 }
 
 func (a *ApiServer) SetAddr(addr string) {

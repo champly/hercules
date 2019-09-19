@@ -1,7 +1,6 @@
 package mq
 
 import (
-	"fmt"
 	"reflect"
 	"sync"
 	"time"
@@ -9,6 +8,7 @@ import (
 	"github.com/champly/hercules/configs"
 	"github.com/champly/hercules/ctxs"
 	"github.com/champly/hercules/servers"
+	"github.com/fatih/color"
 	"github.com/go-redis/redis"
 )
 
@@ -126,9 +126,9 @@ func (m *MQServer) ShutDown() {
 	close(m.stopCh)
 	m.client.Close()
 	<-m.stopSucc
-	fmt.Println("mq shutdown")
+	color.HiYellow("mq shutdown")
 }
 
 func (m *MQServer) Restart() {
-	fmt.Println("mq restart")
+	color.HiYellow("mq restart")
 }

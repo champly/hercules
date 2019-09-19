@@ -1,13 +1,13 @@
 package cron
 
 import (
-	"fmt"
 	"reflect"
 	"strings"
 
 	"github.com/champly/hercules/configs"
 	"github.com/champly/hercules/ctxs"
 	"github.com/champly/hercules/servers"
+	"github.com/fatih/color"
 	"github.com/robfig/cron"
 )
 
@@ -100,9 +100,9 @@ func (c *CronServer) Start() error {
 
 func (c *CronServer) ShutDown() {
 	c.server.Stop()
-	fmt.Println("cron shutdown")
+	color.HiYellow("cron shutdown")
 }
 
 func (c *CronServer) Restart() {
-	fmt.Println("cron restart")
+	color.HiYellow("cron restart")
 }
