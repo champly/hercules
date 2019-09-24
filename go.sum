@@ -10,8 +10,8 @@ github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973/go.mod h1:Dwedo/Wpr24
 github.com/beorn7/perks v1.0.0/go.mod h1:KWe93zE9D1o94FZ5RNwFwVgaQK1VOXiVxmqh+CedLV8=
 github.com/cespare/xxhash v1.1.0/go.mod h1:XrSqR1VqqWfGrhpAt58auRo0WTKS1nRRg3ghfAqPWnc=
 github.com/champly/gojenkins v1.0.0/go.mod h1:veIDe76hgxxvMr2agNsKWPEqj7DyfPiOAY0Bdbojvrw=
-github.com/champly/lib4go v0.0.0-20190917094229-9b79e53dd28c h1:mSI7FsjKSIhKRu9+zb9om30+9a+NsaAC+7JWhMzgdOs=
-github.com/champly/lib4go v0.0.0-20190917094229-9b79e53dd28c/go.mod h1:SFuY7kSFK28X+71RMrK2GAKZZpz7333YcSIUQWELDrM=
+github.com/champly/lib4go v0.0.0-20190924070725-6b80fe675922 h1:sq04SoB7LWHOQTvmV1GCxJoOYUR2D5ceBH+q8//cWTw=
+github.com/champly/lib4go v0.0.0-20190924070725-6b80fe675922/go.mod h1:SFuY7kSFK28X+71RMrK2GAKZZpz7333YcSIUQWELDrM=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/coreos/bbolt v1.3.2/go.mod h1:iRUV2dpdMOn7Bo10OQBFzIJO9kkE559Wcmn+qkEiiKk=
 github.com/coreos/etcd v3.3.10+incompatible/go.mod h1:uF7uidLiAD3TWHmW31ZFd/JWoc32PjwdhPthX9715RE=

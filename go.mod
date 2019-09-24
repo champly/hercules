@@ -3,7 +3,7 @@ module github.com/champly/hercules
 go 1.13
 
 require (
-	github.com/champly/lib4go v0.0.0-20190917094229-9b79e53dd28c
+	github.com/champly/lib4go v0.0.0-20190924070725-6b80fe675922
 	github.com/fatih/color v1.7.0
 	github.com/gin-gonic/gin v1.4.0
 	github.com/go-playground/locales v0.12.1 // indirect
