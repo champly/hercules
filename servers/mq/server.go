@@ -37,15 +37,15 @@ func NewMQServer(routers []servers.Router, h interface{}) (*MQServer, error) {
 		Password: configs.MQServer.Password,
 		DB:       configs.MQServer.DB,
 	})
+	_, err := mq.client.Ping().Result()
+	if err != nil {
+		panic("config mqserver reture err:" + err.Error())
+	}
 	if configs.MQServer.Auth != "" {
 		err := mq.client.Do("AUTO", configs.MQServer.Auth).Err()
 		if err != nil {
 			panic("config mqserver do auth failed:" + err.Error())
 		}
-	}
-	_, err := mq.client.Ping().Result()
-	if err != nil {
-		panic("config mqserver reture err:" + err.Error())
 	}
 	mq.getRouter(routers)
 	return mq, nil
