@@ -59,9 +59,10 @@ type cronserver struct {
 }
 
 type mqserver struct {
-	Addr     string
-	Password string
-	DB       int
+	Addr     string `json:"addr"`
+	Password string `json:"password"`
+	DB       int    `json:"db"`
+	Auth     string `json:"auth"`
 }
 
 var (
