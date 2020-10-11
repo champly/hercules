@@ -1,7 +1,6 @@
 package ctxs
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/sirupsen/logrus"
@@ -12,28 +11,28 @@ const (
 	defaultTimestampFormat = "2006-01-02 15:04:05.000"
 )
 
-const (
-	colorRed = uint8(iota + 91)
-	colorGreen
-	colorYellow
-	colorBlue
-	colorMagenta //洋红
-	colorCyan
-)
+// const (
+// colorRed = uint8(iota + 91)
+// colorGreen
+// colorYellow
+// colorBlue
+// colorMagenta //洋红
+// colorCyan
+// )
 
-var colorList map[string]uint8
+// var colorList map[string]uint8
 
-func init() {
-	colorList = make(map[string]uint8)
+// func init() {
+// colorList = make(map[string]uint8)
 
-	colorList[logrus.TraceLevel.String()] = colorBlue
-	colorList[logrus.DebugLevel.String()] = colorCyan
-	colorList[logrus.InfoLevel.String()] = colorGreen
-	colorList[logrus.WarnLevel.String()] = colorYellow
-	colorList[logrus.ErrorLevel.String()] = colorRed
-	colorList[logrus.FatalLevel.String()] = colorMagenta
-	colorList[logrus.PanicLevel.String()] = colorMagenta
-}
+// colorList[logrus.TraceLevel.String()] = colorBlue
+// colorList[logrus.DebugLevel.String()] = colorCyan
+// colorList[logrus.InfoLevel.String()] = colorGreen
+// colorList[logrus.WarnLevel.String()] = colorYellow
+// colorList[logrus.ErrorLevel.String()] = colorRed
+// colorList[logrus.FatalLevel.String()] = colorMagenta
+// colorList[logrus.PanicLevel.String()] = colorMagenta
+// }
 
 type Formatter struct {
 	TimestampFormat string
@@ -61,7 +60,7 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 		}
 	}
 
-	output = fmt.Sprintf("\x1b[%dm%s\x1b[0m", colorList[entry.Level.String()], output)
+	// output = fmt.Sprintf("\x1b[%dm%s\x1b[0m", colorList[entry.Level.String()], output)
 	output += "\n"
 
 	return []byte(output), nil
