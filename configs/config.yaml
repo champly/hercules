@@ -54,3 +54,4 @@ mqserver:
   addr: "10.13.3.2:6379"
   password: ""
   db: 0
+  auth: ""
