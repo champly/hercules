@@ -9,8 +9,8 @@ import (
 	"github.com/champly/hercules/configs"
 	"github.com/champly/hercules/ctxs"
 	"github.com/champly/hercules/servers"
-	"github.com/fatih/color"
 	"github.com/gin-gonic/gin"
+	"k8s.io/klog/v2"
 )
 
 type Handler func(*ctxs.Context) error
@@ -40,7 +40,7 @@ func NewApiServer(routers []servers.Router, h interface{}) (*ApiServer, error) {
 		return nil, err
 	}
 	if configs.HttpServerInfo.Cors.Enable {
-		color.HiYellow("cors enable")
+		klog.Info("core enable")
 	}
 	return a, nil
 }
@@ -147,7 +147,7 @@ func (a *ApiServer) Start() error {
 	go func() {
 		if err := a.server.ListenAndServe(); err != nil {
 			if !strings.EqualFold(err.Error(), "http: Server closed") {
-				color.HiRed(err.Error())
+				klog.Errorf(err.Error())
 			}
 		}
 	}()
@@ -156,11 +156,11 @@ func (a *ApiServer) Start() error {
 
 func (a *ApiServer) ShutDown() {
 	a.server.Shutdown(context.TODO())
-	color.HiYellow("http shutdown")
+	klog.Info("http shutdown")
 }
 
 func (a *ApiServer) Restart() {
-	color.HiYellow("http restart")
+	klog.Info("http restart")
 }
 
 func (a *ApiServer) SetAddr(addr string) {

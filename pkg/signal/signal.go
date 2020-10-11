@@ -5,7 +5,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/fatih/color"
+	"k8s.io/klog/v2"
 )
 
 func SetupSignalHandler() <-chan struct{} {
@@ -18,7 +18,7 @@ func SetupSignalHandler() <-chan struct{} {
 		<-c
 		close(stop)
 		<-c
-		color.HiRed("强制关闭")
+		klog.Warning("force close!")
 		os.Exit(-1)
 	}()
 

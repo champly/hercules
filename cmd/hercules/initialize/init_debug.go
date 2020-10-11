@@ -7,11 +7,11 @@ package initialize
 // "net/http"
 // _ "net/http/pprof"
 
-// "github.com/fatih/color"
+// "k8s.io/klog/v2"
 // )
 
 // func Initialize() {
-// color.Red("开启pprof, 使用:\n\tgo tool pprof -http=:8081 http://localhost:6066/debug/pprof/heap\n查看相信信息")
+// klog.Info("开启pprof, 使用:\n\tgo tool pprof -http=:8081 http://localhost:6066/debug/pprof/heap\n查看相信信息")
 // go func() {
 // // terminal: $ go tool pprof -http=:8081 http://localhost:6066/debug/pprof/{heap,allocs,block,cmdline,goroutine,mutex,profile,threadcreate,trace}
 // // web:

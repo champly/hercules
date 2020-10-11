@@ -13,7 +13,7 @@ import (
 	"github.com/champly/hercules/registry"
 	"github.com/champly/hercules/servers"
 	"github.com/champly/hercules/servers/http"
-	"github.com/fatih/color"
+	"k8s.io/klog/v2"
 )
 
 type Hercules struct {
@@ -54,7 +54,7 @@ func (h *Hercules) Start() {
 	stop := signal.SetupSignalHandler()
 	<-stop
 	h.ShutDown()
-	color.HiMagenta("关闭成功")
+	klog.Info("close success")
 }
 
 func (h *Hercules) startService() {
@@ -68,10 +68,10 @@ func (h *Hercules) startService() {
 			panic(err)
 		}
 		if err = server.Start(); err != nil {
-			color.HiRed(t+" start fail:", err)
+			klog.Errorf("[%s] start fail: %v", t, err)
 			continue
 		}
-		color.HiMagenta(t + " start success")
+		klog.Infof("[%s] start success", t)
 		h.services[t] = server
 	}
 	if h.initf == nil {
@@ -94,14 +94,14 @@ func (h *Hercules) startHealthService() {
 	}
 	statusServer.SetAddr(":16666")
 	if err = statusServer.Start(); err != nil {
-		color.HiRed("health server start fail:", err)
+		klog.Errorf("health server start fail: %v", err)
 		return
 	}
-	color.HiMagenta("health server start success")
+	klog.Info("health server start success")
 }
 
 func (h *Hercules) ShutDown() {
-	color.HiMagenta("正在关闭服务，请等待，如需强制关闭请继续执行Ctrl+c")
+	klog.Info("Closing service, please wait a moment, if you need force close, prese 'Ctrl+c'")
 	go func() {
 		for _, server := range h.services {
 			server.ShutDown()
@@ -111,7 +111,7 @@ func (h *Hercules) ShutDown() {
 
 	select {
 	case <-time.After(time.Second * 30):
-		color.HiRed("关闭30s超时，自动关闭")
+		klog.Error("Closing 30s timeout, force close!")
 		return
 	case <-h.cl:
 		return

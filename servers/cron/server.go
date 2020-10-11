@@ -7,8 +7,8 @@ import (
 	"github.com/champly/hercules/configs"
 	"github.com/champly/hercules/ctxs"
 	"github.com/champly/hercules/servers"
-	"github.com/fatih/color"
 	"github.com/robfig/cron"
+	"k8s.io/klog/v2"
 )
 
 type CronServer struct {
@@ -100,9 +100,9 @@ func (c *CronServer) Start() error {
 
 func (c *CronServer) ShutDown() {
 	c.server.Stop()
-	color.HiYellow("cron shutdown")
+	klog.Info("cron shutdown")
 }
 
 func (c *CronServer) Restart() {
-	color.HiYellow("cron restart")
+	klog.Info("cron restart")
 }

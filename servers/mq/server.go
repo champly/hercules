@@ -8,8 +8,8 @@ import (
 	"github.com/champly/hercules/configs"
 	"github.com/champly/hercules/ctxs"
 	"github.com/champly/hercules/servers"
-	"github.com/fatih/color"
 	"github.com/go-redis/redis"
+	"k8s.io/klog/v2"
 )
 
 type MQServer struct {
@@ -136,9 +136,9 @@ func (m *MQServer) ShutDown() {
 	close(m.stopCh)
 	m.client.Close()
 	<-m.stopSucc
-	color.HiYellow("mq shutdown")
+	klog.Info("mq shutdown")
 }
 
 func (m *MQServer) Restart() {
-	color.HiYellow("mq restart")
+	klog.Info("mq restart")
 }
