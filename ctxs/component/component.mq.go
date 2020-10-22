@@ -6,6 +6,7 @@ import (
 
 	"github.com/champly/hercules/configs"
 	"github.com/go-redis/redis"
+	"k8s.io/klog/v2"
 )
 
 type IComponentMQ interface {
@@ -56,6 +57,7 @@ func (m *ComponentMQ) getClient() {
 	if err != nil {
 		panic("config mqserver reture err:" + err.Error())
 	}
+	klog.Infof("connect redis succ.")
 	m.client = client
 }
 

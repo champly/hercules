@@ -51,6 +51,8 @@ func NewMQServer(routers []servers.Router, h interface{}) (*MQServer, error) {
 	if err != nil {
 		panic("config mqserver reture err:" + err.Error())
 	}
+	klog.Infof("connect redis succ.")
+
 	mq.getRouter(routers)
 	return mq, nil
 }
