@@ -45,6 +45,13 @@ func (m *ComponentMQ) getClient() {
 		Password: configs.MQServer.Password,
 		DB:       configs.MQServer.DB,
 	})
+	// secret auth
+	if configs.MQServer.Auth != "" {
+		err := client.Do("AUTH", configs.MQServer.Auth).Err()
+		if err != nil {
+			panic("config component mq do auth failed:" + err.Error())
+		}
+	}
 	_, err := client.Ping().Result()
 	if err != nil {
 		panic("config mqserver reture err:" + err.Error())
