@@ -51,7 +51,6 @@ cronserver:
 
 # mq server config
 mqserver:
-  addr: "10.13.3.2:6379"
+  addr: "localhost:6379"
   password: ""
   db: 0
-

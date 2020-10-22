@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/champly/hercules/configs"
 	"github.com/champly/hercules/ctxs"
+	"github.com/champly/hercules/ctxs/component"
 	"github.com/champly/hercules/servers"
 	"github.com/go-redis/redis/v8"
 	"k8s.io/klog/v2"
@@ -31,28 +31,8 @@ func NewMQServer(routers []servers.Router, h interface{}) (*MQServer, error) {
 		servers:  make(map[string]func(*ctxs.Context) error),
 		stopCh:   make(chan struct{}),
 		stopSucc: make(chan struct{}),
+		client:   component.GetSingleClient(),
 	}
-
-	mq.client = redis.NewClient(&redis.Options{
-		Addr:     configs.MQServer.Addr,
-		Password: configs.MQServer.Password,
-		DB:       configs.MQServer.DB,
-	})
-
-	// secret auth
-	if configs.MQServer.Auth != "" {
-		err := mq.client.Do(context.TODO(), "AUTH", configs.MQServer.Auth).Err()
-		if err != nil {
-			panic("config mqserver do auth failed:" + err.Error())
-		}
-	}
-
-	// test connected
-	_, err := mq.client.Ping(context.TODO()).Result()
-	if err != nil {
-		panic("config mqserver reture err:" + err.Error())
-	}
-	klog.Infof("connect redis succ.")
 
 	mq.getRouter(routers)
 	return mq, nil

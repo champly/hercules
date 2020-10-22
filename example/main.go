@@ -22,4 +22,6 @@ func (a *App) register() {
 	a.API("/api/demo", api.Api)
 
 	a.Cron("auto.demo", cron.NewCron)
+
+	a.MQ("mq.test", cron.Receive)
 }

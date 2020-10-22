@@ -15,12 +15,13 @@ type IComponentMQ interface {
 }
 
 type ComponentMQ struct {
-	client *redis.Client
 }
 
 var (
 	componentMQ *ComponentMQ
 	lockMQ      sync.Mutex
+	client      *redis.Client
+	l           sync.Mutex
 )
 
 func NewComponentMQ() *ComponentMQ {
@@ -37,38 +38,49 @@ func NewComponentMQ() *ComponentMQ {
 	return componentMQ
 }
 
-func (m *ComponentMQ) getClient() {
-	if m.client != nil {
-		return
+func (m *ComponentMQ) Produce(queueName, value string) error {
+	if client == nil {
+		GetSingleClient()
 	}
 
-	client := redis.NewClient(&redis.Options{
+	cmd := client.LPush(context.TODO(), queueName, value)
+	_, err := cmd.Result()
+	if err != nil {
+		return fmt.Errorf("lpush %s %s fail:err:%+v", queueName, value, err)
+	}
+	return nil
+}
+
+func GetSingleClient() *redis.Client {
+	if client != nil {
+		return client
+	}
+
+	l.Lock()
+	defer l.Unlock()
+
+	if client != nil {
+		return client
+	}
+	cli := redis.NewClient(&redis.Options{
 		Addr:     configs.MQServer.Addr,
 		Password: configs.MQServer.Password,
 		DB:       configs.MQServer.DB,
 	})
 	// secret auth
 	if configs.MQServer.Auth != "" {
-		err := client.Do(context.TODO(), "AUTH", configs.MQServer.Auth).Err()
+		err := cli.Do(context.TODO(), "AUTH", configs.MQServer.Auth).Err()
 		if err != nil {
 			panic("config component mq do auth failed:" + err.Error())
 		}
 	}
-	_, err := client.Ping(context.TODO()).Result()
+	_, err := cli.Ping(context.TODO()).Result()
 	if err != nil {
 		panic("config mqserver reture err:" + err.Error())
 	}
-	klog.Infof("connect redis succ.")
-	m.client = client
-}
 
-func (m *ComponentMQ) Produce(queueName, value string) error {
-	m.getClient()
+	klog.Infof("connect redis {%s} succ.", configs.MQServer.Addr)
 
-	cmd := m.client.LPush(context.TODO(), queueName, value)
-	_, err := cmd.Result()
-	if err != nil {
-		return fmt.Errorf("lpush %s %s fail:err:%+v", queueName, value, err)
-	}
-	return nil
+	client = cli
+	return client
 }
