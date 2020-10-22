@@ -1,6 +1,7 @@
 package mq
 
 import (
+	"context"
 	"reflect"
 	"sync"
 	"time"
@@ -8,7 +9,7 @@ import (
 	"github.com/champly/hercules/configs"
 	"github.com/champly/hercules/ctxs"
 	"github.com/champly/hercules/servers"
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 	"k8s.io/klog/v2"
 )
 
@@ -40,14 +41,14 @@ func NewMQServer(routers []servers.Router, h interface{}) (*MQServer, error) {
 
 	// secret auth
 	if configs.MQServer.Auth != "" {
-		err := mq.client.Do("AUTH", configs.MQServer.Auth).Err()
+		err := mq.client.Do(context.TODO(), "AUTH", configs.MQServer.Auth).Err()
 		if err != nil {
 			panic("config mqserver do auth failed:" + err.Error())
 		}
 	}
 
 	// test connected
-	_, err := mq.client.Ping().Result()
+	_, err := mq.client.Ping(context.TODO()).Result()
 	if err != nil {
 		panic("config mqserver reture err:" + err.Error())
 	}
@@ -88,7 +89,7 @@ func (m *MQServer) Consume(queueName string, callback func(*ctxs.Context) error)
 		msgCh := make(chan messgae)
 
 		go func() {
-			cmd := m.client.BRPop(time.Second*1, queueName)
+			cmd := m.client.BRPop(context.TODO(), time.Second*1, queueName)
 			msg, err := cmd.Result()
 			hasData := err == nil && len(msg) > 0
 			ndata := ""
