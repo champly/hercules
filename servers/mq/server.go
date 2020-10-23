@@ -1,7 +1,6 @@
 package mq
 
 import (
-	"context"
 	"reflect"
 	"sync"
 	"time"
@@ -69,7 +68,7 @@ func (m *MQServer) Consume(queueName string, callback func(*ctxs.Context) error)
 		msgCh := make(chan messgae)
 
 		go func() {
-			cmd := m.client.BRPop(context.TODO(), time.Second*1, queueName)
+			cmd := m.client.BRPop(time.Second*1, queueName)
 			msg, err := cmd.Result()
 			hasData := err == nil && len(msg) > 0
 			ndata := ""
