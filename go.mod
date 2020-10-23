@@ -5,6 +5,7 @@ go 1.15
 require (
 	github.com/champly/lib4go v0.0.0-20201011013828-08c00d776af2
 	github.com/gin-gonic/gin v1.6.3
+	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/go-redis/redis/v8 v8.3.3-0.20201022064020-38caa12762e7
 	github.com/google/gops v0.3.13-0.20200910081257-5d514cabbb21
 	github.com/magiconair/properties v1.8.4 // indirect

@@ -1,12 +1,11 @@
 package component
 
 import (
-	"context"
 	"fmt"
 	"sync"
 
 	"github.com/champly/hercules/configs"
-	"github.com/go-redis/redis/v8"
+	"github.com/go-redis/redis"
 	"k8s.io/klog/v2"
 )
 
@@ -43,7 +42,7 @@ func (m *ComponentMQ) Produce(queueName, value string) error {
 		GetSingleClient()
 	}
 
-	cmd := client.LPush(context.TODO(), queueName, value)
+	cmd := client.LPush(queueName, value)
 	_, err := cmd.Result()
 	if err != nil {
 		return fmt.Errorf("lpush %s %s fail:err:%+v", queueName, value, err)
@@ -69,12 +68,12 @@ func GetSingleClient() *redis.Client {
 	})
 	// secret auth
 	if configs.MQServer.Auth != "" {
-		err := cli.Do(context.TODO(), "AUTH", configs.MQServer.Auth).Err()
+		err := cli.Do("AUTH", configs.MQServer.Auth).Err()
 		if err != nil {
 			panic("config component mq do auth failed:" + err.Error())
 		}
 	}
-	_, err := cli.Ping(context.TODO()).Result()
+	_, err := cli.Ping().Result()
 	if err != nil {
 		panic("config mqserver reture err:" + err.Error())
 	}
