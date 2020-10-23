@@ -1,6 +1,7 @@
 package mq
 
 import (
+	"context"
 	"reflect"
 	"sync"
 	"time"
@@ -8,7 +9,7 @@ import (
 	"github.com/champly/hercules/ctxs"
 	"github.com/champly/hercules/ctxs/component"
 	"github.com/champly/hercules/servers"
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 	"k8s.io/klog/v2"
 )
 
@@ -68,7 +69,7 @@ func (m *MQServer) Consume(queueName string, callback func(*ctxs.Context) error)
 		msgCh := make(chan messgae)
 
 		go func() {
-			cmd := m.client.BRPop(time.Second*1, queueName)
+			cmd := m.client.BRPop(context.TODO(), time.Second*1, queueName)
 			msg, err := cmd.Result()
 			hasData := err == nil && len(msg) > 0
 			ndata := ""
