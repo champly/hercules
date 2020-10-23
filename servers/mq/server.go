@@ -9,7 +9,7 @@ import (
 	"github.com/champly/hercules/ctxs"
 	"github.com/champly/hercules/ctxs/component"
 	"github.com/champly/hercules/servers"
-	"github.com/go-redis/redis/v8"
+	"github.com/go-redis/redis"
 	"k8s.io/klog/v2"
 )
 

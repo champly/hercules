@@ -6,9 +6,11 @@ require (
 	github.com/champly/lib4go v0.0.0-20201011013828-08c00d776af2
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-redis/redis v6.15.9+incompatible
-	github.com/go-redis/redis/v8 v8.3.3-0.20201022064020-38caa12762e7
+	github.com/google/go-cmp v0.5.2 // indirect
 	github.com/google/gops v0.3.13-0.20200910081257-5d514cabbb21
 	github.com/magiconair/properties v1.8.4 // indirect
+	github.com/onsi/ginkgo v1.14.2 // indirect
+	github.com/onsi/gomega v1.10.3 // indirect
 	github.com/pelletier/go-toml v1.8.1 // indirect
 	github.com/robfig/cron v1.2.0
 	github.com/sirupsen/logrus v1.7.1-0.20200930112625-d131c24e23ba
@@ -17,6 +19,7 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.7.2-0.20201012074520-4938331709c1
+	github.com/stretchr/testify v1.6.1 // indirect
 	golang.org/x/sys v0.0.0-20201020230747-6e5568b54d1a // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v9 v9.31.0
