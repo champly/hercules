@@ -18,3 +18,8 @@ const (
 	ServerTypeCron = "cron"
 	ServerTypeMQ   = "mq"
 )
+
+const (
+	ServerModeDebug   = "debug"
+	ServerModeRelease = "release"
+)

@@ -15,19 +15,19 @@ import (
 
 type MQServer struct {
 	client   *redis.Client
-	handing  func(*ctxs.Context) error
+	preHand  func(*ctxs.Context) error
 	servers  map[string]func(*ctxs.Context) error
 	stopCh   chan struct{}
 	stopSucc chan struct{}
 }
 
 func NewMQServer(routers []servers.Router, h interface{}) (*MQServer, error) {
-	handing, ok := h.(func(*ctxs.Context) error)
+	preHand, ok := h.(func(*ctxs.Context) error)
 	if !ok {
-		panic("handing function is not func(ctx *ctxs.Context) error")
+		panic("preHand function is not func(ctx *ctxs.Context) error")
 	}
 	mq := &MQServer{
-		handing:  handing,
+		preHand:  preHand,
 		servers:  make(map[string]func(*ctxs.Context) error),
 		stopCh:   make(chan struct{}),
 		stopSucc: make(chan struct{}),
@@ -99,8 +99,8 @@ func (m *MQServer) do(data string, callback func(*ctxs.Context) error) (err erro
 	ctx := ctxs.GetMQContext(data)
 	ctx.Type = ctxs.ServerTypeMQ
 	defer ctx.Put()
-	if m.handing != nil {
-		if err = m.handing(ctx); err != nil {
+	if m.preHand != nil {
+		if err = m.preHand(ctx); err != nil {
 			return
 		}
 	}

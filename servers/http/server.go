@@ -13,24 +13,29 @@ import (
 	"k8s.io/klog/v2"
 )
 
+var (
+	serverSeparator       = "|"
+	defaultServerErrorMsg = "system busy"
+)
+
 type Handler func(*ctxs.Context) error
 
 type ApiServer struct {
 	services map[string]map[string]func(*ctxs.Context) error
 	server   *http.Server
 	engine   *gin.Engine
-	handing  func(*ctxs.Context) error
+	preHand  func(*ctxs.Context) error
 }
 
 func NewApiServer(routers []servers.Router, h interface{}) (*ApiServer, error) {
 	// nil not panic
 	a := &ApiServer{services: make(map[string]map[string]func(*ctxs.Context) error)}
 	if h != nil {
-		handing, ok := h.(func(*ctxs.Context) error)
+		preHand, ok := h.(func(*ctxs.Context) error)
 		if !ok {
-			panic("handing function is not func(ctx *ctxs.Context)error")
+			panic("preHand function is not func(ctx *ctxs.Context) error")
 		}
-		a.handing = handing
+		a.preHand = preHand
 	}
 	a.server = &http.Server{
 		Addr: configs.HttpServerInfo.Address,
@@ -54,7 +59,7 @@ func (a *ApiServer) getRouter(routers []servers.Router) error {
 			}
 			panic(reflect.TypeOf(r.Handler).Name() + " handler is not func(ctx *ctxs.Context)error")
 		}
-		for _, m := range strings.Split(r.Method, "|") {
+		for _, m := range strings.Split(r.Method, serverSeparator) {
 			if _, ok := a.services[r.Name]; !ok {
 				a.services[r.Name] = map[string]func(*ctxs.Context) error{}
 			}
@@ -68,7 +73,7 @@ func (a *ApiServer) getHandler(mode string) http.Handler {
 	gin.SetMode(mode)
 
 	engine := gin.New()
-	if strings.EqualFold(mode, "debug") {
+	if strings.EqualFold(mode, gin.DebugMode) {
 		engine.Use(gin.Logger())
 	}
 
@@ -97,39 +102,30 @@ func (a *ApiServer) GeneralHandler() gin.HandlerFunc {
 		ctx.Type = ctxs.ServerTypeHTTP
 		defer ctx.Put()
 
-		if a.handing != nil {
-			// handing
-			if err := a.handing(ctx); err != nil {
-				ctx.Log.Error(err.Error())
+		a.do(ctx, a.preHand)
 
-				if ctx.Writer.Status() != 200 {
-					return
-				}
+		a.do(ctx, h)
+		return
+	}
+}
 
-				respMsg := "system busy"
-				if strings.EqualFold(configs.SystemInfo.Mode, "debug") {
-					respMsg = err.Error()
-				}
-				ctx.JSON(http.StatusInternalServerError, respMsg)
-				return
-			}
-		}
+func (a *ApiServer) do(ctx *ctxs.Context, handler Handler) {
+	if handler == nil {
+		return
+	}
 
-		// Handler
-		if err := h(ctx); err != nil {
-			ctx.Log.Error(err.Error())
+	if err := handler(ctx); err != nil {
+		ctx.Log.Error(err.Error())
 
-			if ctx.Writer.Status() != 200 {
-				return
-			}
-
-			respMsg := "system busy"
-			if strings.EqualFold(configs.SystemInfo.Mode, "debug") {
-				respMsg = err.Error()
-			}
-			ctx.JSON(http.StatusInternalServerError, respMsg)
+		if ctx.Writer.Status() != http.StatusOK {
 			return
 		}
+
+		respMsg := defaultServerErrorMsg
+		if strings.EqualFold(configs.SystemInfo.Mode, configs.ServerModeDebug) {
+			respMsg = err.Error()
+		}
+		ctx.JSON(http.StatusInternalServerError, respMsg)
 		return
 	}
 }

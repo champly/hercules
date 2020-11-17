@@ -7,6 +7,28 @@ import (
 	"github.com/champly/hercules/servers"
 )
 
+const (
+	DefaultHandlerName       = "Handler"
+	RESTfulHandlerGetName    = "GetHandler"
+	RESTfulHandlerPostName   = "PostHandler"
+	RESTfulHandlerPutName    = "PutHandler"
+	RESTfulHandlerDeleteName = "DeleteHandler"
+)
+
+var (
+	methodMap map[string]string
+)
+
+func init() {
+	methodMap = map[string]string{
+		DefaultHandlerName:       configs.HttpMethodALL,
+		RESTfulHandlerGetName:    configs.HttpMethodGet,
+		RESTfulHandlerPostName:   configs.HttpMethodPost,
+		RESTfulHandlerPutName:    configs.HttpMethodPut,
+		RESTfulHandlerDeleteName: configs.HttpMethodDelete,
+	}
+}
+
 func (s *ServiceRegistry) buildAPIRouterByObj(pattern string, constrObj interface{}) {
 	routers, ok := s.services[configs.ServerTypeAPI]
 	if !ok {
@@ -17,17 +39,9 @@ func (s *ServiceRegistry) buildAPIRouterByObj(pattern string, constrObj interfac
 	t := reflect.TypeOf(constrObj)
 
 	for i := 0; i < t.NumMethod(); i++ {
-		switch t.Method(i).Name {
-		case "Handler":
-			routers = append(routers, servers.Router{Name: pattern, Method: configs.HttpMethodALL, Handler: v.Method(i).Interface()})
-		case "GetHandler":
-			routers = append(routers, servers.Router{Name: pattern, Method: configs.HttpMethodGet, Handler: v.Method(i).Interface()})
-		case "PostHandler":
-			routers = append(routers, servers.Router{Name: pattern, Method: configs.HttpMethodPost, Handler: v.Method(i).Interface()})
-		case "PutHandler":
-			routers = append(routers, servers.Router{Name: pattern, Method: configs.HttpMethodPut, Handler: v.Method(i).Interface()})
-		case "DeleteHandler":
-			routers = append(routers, servers.Router{Name: pattern, Method: configs.HttpMethodDelete, Handler: v.Method(i).Interface()})
+		method, ok := methodMap[t.Method(i).Name]
+		if ok {
+			routers = append(routers, servers.Router{Name: pattern, Method: method, Handler: v.Method(i).Interface()})
 		}
 	}
 	s.services[configs.ServerTypeAPI] = routers
