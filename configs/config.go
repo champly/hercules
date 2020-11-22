@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Config config info
 type Config struct {
 	Plat       plat       `json:"plat"`
 	System     system     `json:"system"`
@@ -68,7 +69,7 @@ var (
 	PlatInfo       = &plat{}
 	SystemInfo     = &system{}
 	LoggerInfo     = &logger{}
-	HttpServerInfo = &httpserver{}
+	HTTPServerInfo = &httpserver{}
 	CronServerInfo = &cronserver{}
 	DBInfo         = &db{}
 	MQServer       = &mqserver{}
@@ -92,7 +93,7 @@ func Setup() {
 	PlatInfo = &config.Plat
 	SystemInfo = &config.System
 	LoggerInfo = &config.Logger
-	HttpServerInfo = &config.HttpServer
+	HTTPServerInfo = &config.HttpServer
 	CronServerInfo = &config.CronServer
 	DBInfo = &config.DB
 	MQServer = &config.MQServer

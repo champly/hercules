@@ -1,5 +1,6 @@
 package configs
 
+// HttpMethod
 const (
 	HttpMethodGet     = "GET"
 	HttpMethodPost    = "POST"
@@ -13,12 +14,14 @@ const (
 	HttpMethodALL     = "GET|POST|PUT|PATCH|HEAD|OPTIONS|DELETE|CONNECT|TRACE"
 )
 
+// ServiceType support service type
 const (
 	ServerTypeAPI  = "api"
 	ServerTypeCron = "cron"
 	ServerTypeMQ   = "mq"
 )
 
+// ServiceMode service run mode
 const (
 	ServerModeDebug   = "debug"
 	ServerModeRelease = "release"

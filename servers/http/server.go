@@ -38,13 +38,13 @@ func NewApiServer(routers []servers.Router, h interface{}) (*ApiServer, error) {
 		a.preHand = preHand
 	}
 	a.server = &http.Server{
-		Addr: configs.HttpServerInfo.Address,
+		Addr: configs.HTTPServerInfo.Address,
 	}
 	a.server.Handler = a.getHandler(configs.SystemInfo.Mode)
 	if err := a.getRouter(routers); err != nil {
 		return nil, err
 	}
-	if configs.HttpServerInfo.Cors.Enable {
+	if configs.HTTPServerInfo.Cors.Enable {
 		klog.Info("core enable")
 	}
 	return a, nil
@@ -84,8 +84,8 @@ func (a *ApiServer) getHandler(mode string) http.Handler {
 
 func (a *ApiServer) GeneralHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if configs.HttpServerInfo.Cors.Enable {
-			for k, v := range configs.HttpServerInfo.Cors.Header {
+		if configs.HTTPServerInfo.Cors.Enable {
+			for k, v := range configs.HTTPServerInfo.Cors.Header {
 				c.Writer.Header().Add(k, v)
 			}
 			if strings.EqualFold(c.Request.Method, configs.HttpMethodOptions) {

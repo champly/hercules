@@ -1,12 +1,13 @@
 package status
 
 import (
-	"fmt"
-
 	"github.com/champly/hercules/ctxs"
+	"k8s.io/klog/v2"
 )
 
+// GetServerStatus get service health
 func GetServerStatus(ctx *ctxs.Context) error {
-	fmt.Println("server health not finish!")
+	// TODO: not implement
+	klog.Warningln("server health not finish!")
 	return nil
 }

@@ -16,6 +16,7 @@ import (
 	"k8s.io/klog/v2"
 )
 
+// Hercules hercules struct
 type Hercules struct {
 	*option
 	registry.IServiceRegistry
@@ -26,6 +27,7 @@ type Hercules struct {
 	initf    func(ctx *ctxs.Context) error
 }
 
+// New build Hercules obj
 func New(opts ...Option) *Hercules {
 	h := &Hercules{
 		option:           &option{},
@@ -40,8 +42,9 @@ func New(opts ...Option) *Hercules {
 	return h
 }
 
+// Start start Hercules service
 func (h *Hercules) Start() {
-	initialize.Initialize()
+	initialize.Setpprof()
 
 	// start services
 	h.startService()
@@ -100,6 +103,7 @@ func (h *Hercules) startHealthService() {
 	klog.Info("health server start success")
 }
 
+// ShutDown shutdown Hercules all service
 func (h *Hercules) ShutDown() {
 	klog.Info("Closing service, please wait a moment, if you need force close, prese 'Ctrl+c'")
 	go func() {
@@ -118,10 +122,12 @@ func (h *Hercules) ShutDown() {
 	}
 }
 
+// Init set Hercules init func
 func (h *Hercules) Init(f func(*ctxs.Context) error) {
 	h.initf = f
 }
 
+// Handing set all request first exec func
 func (h *Hercules) Handing(f func(*ctxs.Context) error) {
 	h.handing = f
 }
