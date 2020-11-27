@@ -22,7 +22,7 @@ func initConfig() {
 	viper.SetConfigName("config")
 
 	if err := viper.ReadInConfig(); err != nil {
-		panic("load config file error:" + err.Error())
+		klog.Fatalf("load config file error:" + err.Error())
 	}
 
 	klog.Infof("Using config file:%s", viper.ConfigFileUsed())

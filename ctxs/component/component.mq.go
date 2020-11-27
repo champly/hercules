@@ -69,7 +69,7 @@ func GetSingleClient() *redis.Client {
 	})
 	_, err := cli.Ping(context.TODO()).Result()
 	if err != nil {
-		panic("config mqserver reture err:" + err.Error())
+		klog.Fatalf("config mqserver reture err:" + err.Error())
 	}
 
 	klog.Infof("connect redis {%s} succ.", configs.MQServer.Addr)

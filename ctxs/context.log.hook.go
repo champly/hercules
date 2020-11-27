@@ -43,7 +43,7 @@ func (f *FileSplitHook) Fire(e *logrus.Entry) (err error) {
 	if err != nil {
 		return err
 	}
-	e.Data["sid"] = f.sid
+	e.Data[sessionIDVar] = f.sid
 	return nil
 }
 

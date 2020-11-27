@@ -37,9 +37,6 @@ func NewComponentDB() *ComponentDB {
 		return componentDB
 	}
 
-	// if configs.DBInfo == nil || len(configs.DBInfo.List) < 1 {
-	// 	panic("db config is empty, can't use db component")
-	// }
 	componentDB = &ComponentDB{
 		pool: cmap.New(2),
 	}
@@ -76,7 +73,7 @@ func (c *ComponentDB) GetDB(name string) (db.IDB, error) {
 		return nil, errors.New(name + " is not config")
 	})
 	if err != nil {
-		return nil, fmt.Errorf("创建db失败: err:%s", err)
+		return nil, fmt.Errorf("create db instance err:%s", err)
 	}
 	return dbObj.(db.IDB), nil
 }

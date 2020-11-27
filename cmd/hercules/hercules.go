@@ -9,10 +9,10 @@ import (
 	"github.com/champly/hercules/configs"
 	"github.com/champly/hercules/ctxs"
 	_ "github.com/champly/hercules/init"
-	"github.com/champly/hercules/pkg/signal"
 	"github.com/champly/hercules/registry"
 	"github.com/champly/hercules/servers"
 	"github.com/champly/hercules/servers/http"
+	"github.com/champly/lib4go/signal"
 	"k8s.io/klog/v2"
 )
 

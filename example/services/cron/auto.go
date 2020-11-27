@@ -1,9 +1,6 @@
 package cron
 
 import (
-	"fmt"
-	"time"
-
 	"github.com/champly/hercules/ctxs"
 )
 
@@ -21,7 +18,7 @@ func (c *Cron) Handler(ctx *ctxs.Context) (err error) {
 	ctx.Log.Debug("debug")
 	ctx.Log.Warn("warn")
 
-	ctx.ToolBox.Produce("mq.test", fmt.Sprintf(`{"time":"%s"}`, time.Now().Format("2006-01-02 15:04:05")))
+	// ctx.ToolBox.Produce("mq.test", fmt.Sprintf(`{"time":"%s"}`, time.Now().Format("2006-01-02 15:04:05")))
 
 	return nil
 }

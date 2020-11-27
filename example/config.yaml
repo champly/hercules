@@ -8,7 +8,7 @@ system:
   # mode: debug/release
   mode: release
   # api/cron/mq
-  type: api|cron|mq
+  type: api|cron
   health: true
 
 # logger config
@@ -49,7 +49,6 @@ cronserver:
     - name: "auto.demo"
       time: "@every 1s"
 
-# mq server config
 mqserver:
   addr: "localhost:6379"
   password: ""
