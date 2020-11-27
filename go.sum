@@ -32,8 +32,8 @@ github.com/cespare/xxhash v1.1.0/go.mod h1:XrSqR1VqqWfGrhpAt58auRo0WTKS1nRRg3ghf
 github.com/cespare/xxhash/v2 v2.1.1 h1:6MnRN8NT7+YBpUIWxHtefFZOKTAPgGjpQSxqLNn0+qY=
 github.com/cespare/xxhash/v2 v2.1.1/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
 github.com/champly/gojenkins v1.0.0/go.mod h1:veIDe76hgxxvMr2agNsKWPEqj7DyfPiOAY0Bdbojvrw=
-github.com/champly/lib4go v0.0.0-20201109014248-2617e448e599 h1:NekIf05fAQJqZd/PF4NIy7LuXf0PP2mc4I4wOhxKXGA=
-github.com/champly/lib4go v0.0.0-20201109014248-2617e448e599/go.mod h1:ngYGueIBk88zcscp8zRntrYFNjpf/mEezQuty+510kI=
+github.com/champly/lib4go v0.0.0-20201127070907-d7500712d41d h1:IuvessmsnnEqWaazX6jlRT+xB9Nde1coUGzasY3gqmU=
+github.com/champly/lib4go v0.0.0-20201127070907-d7500712d41d/go.mod h1:ngYGueIBk88zcscp8zRntrYFNjpf/mEezQuty+510kI=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/coreos/bbolt v1.3.2/go.mod h1:iRUV2dpdMOn7Bo10OQBFzIJO9kkE559Wcmn+qkEiiKk=
 github.com/coreos/etcd v3.3.13+incompatible/go.mod h1:uF7uidLiAD3TWHmW31ZFd/JWoc32PjwdhPthX9715RE=

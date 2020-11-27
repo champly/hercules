@@ -3,7 +3,7 @@ module github.com/champly/hercules
 go 1.15
 
 require (
-	github.com/champly/lib4go v0.0.0-20201109014248-2617e448e599
+	github.com/champly/lib4go v0.0.0-20201127070907-d7500712d41d
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-redis/redis/v8 v8.3.2
 	github.com/google/gops v0.3.13-0.20200910081257-5d514cabbb21
