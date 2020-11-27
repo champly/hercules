@@ -3,22 +3,24 @@ package mq
 import (
 	"context"
 	"reflect"
-	"sync"
+	"runtime"
 	"time"
 
 	"github.com/champly/hercules/ctxs"
 	"github.com/champly/hercules/ctxs/component"
 	"github.com/champly/hercules/servers"
+	"github.com/champly/lib4go/sync"
 	"github.com/go-redis/redis/v8"
 	"k8s.io/klog/v2"
 )
 
 type MQServer struct {
-	client   *redis.Client
-	preHand  func(*ctxs.Context) error
-	servers  map[string]func(*ctxs.Context) error
-	stopCh   chan struct{}
-	stopSucc chan struct{}
+	client     *redis.Client
+	preHand    func(*ctxs.Context) error
+	servers    map[string]func(*ctxs.Context) error
+	stopCh     chan struct{}
+	stopSucc   chan struct{}
+	workerPool sync.WorkerPool
 }
 
 func NewMQServer(routers []servers.Router, h interface{}) (*MQServer, error) {
@@ -27,11 +29,12 @@ func NewMQServer(routers []servers.Router, h interface{}) (*MQServer, error) {
 		panic("preHand function is not func(ctx *ctxs.Context) error")
 	}
 	mq := &MQServer{
-		preHand:  preHand,
-		servers:  make(map[string]func(*ctxs.Context) error),
-		stopCh:   make(chan struct{}),
-		stopSucc: make(chan struct{}),
-		client:   component.GetSingleClient(),
+		preHand:    preHand,
+		servers:    make(map[string]func(*ctxs.Context) error),
+		stopCh:     make(chan struct{}),
+		stopSucc:   make(chan struct{}),
+		client:     component.GetSingleClient(),
+		workerPool: sync.NewWorkerPool(runtime.GOMAXPROCS(0) * 10),
 	}
 
 	mq.getRouter(routers)
@@ -65,10 +68,11 @@ func (m *MQServer) startServer() {
 }
 
 func (m *MQServer) Consume(queueName string, callback func(*ctxs.Context) error) {
-	for {
-		msgCh := make(chan messgae)
+	msgCh := make(chan messgae)
+	defer close(msgCh)
 
-		go func() {
+	for {
+		m.workerPool.ScheduleAuto(func() {
 			cmd := m.client.BRPop(context.TODO(), time.Second*1, queueName)
 			msg, err := cmd.Result()
 			hasData := err == nil && len(msg) > 0
@@ -77,7 +81,7 @@ func (m *MQServer) Consume(queueName string, callback func(*ctxs.Context) error)
 				ndata = msg[len(msg)-1]
 			}
 			msgCh <- messgae{Data: ndata, HasData: hasData}
-		}()
+		})
 
 		select {
 		case <-m.stopCh:
@@ -89,8 +93,10 @@ func (m *MQServer) Consume(queueName string, callback func(*ctxs.Context) error)
 			if !msg.HasData {
 				continue
 			}
+			m.workerPool.ScheduleAuto(func() {
+				m.do(msg.Data, callback)
+			})
 
-			go m.do(msg.Data, callback)
 		}
 	}
 }
@@ -99,6 +105,7 @@ func (m *MQServer) do(data string, callback func(*ctxs.Context) error) (err erro
 	ctx := ctxs.GetMQContext(data)
 	ctx.Type = ctxs.ServerTypeMQ
 	defer ctx.Put()
+
 	if m.preHand != nil {
 		if err = m.preHand(ctx); err != nil {
 			return

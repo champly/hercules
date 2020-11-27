@@ -13,6 +13,7 @@ import (
 	"github.com/champly/hercules/servers"
 	"github.com/champly/hercules/servers/http"
 	"github.com/champly/lib4go/signal"
+	_ "go.uber.org/automaxprocs"
 	"k8s.io/klog/v2"
 )
 

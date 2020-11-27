@@ -102,23 +102,23 @@ func (a *ApiServer) GeneralHandler() gin.HandlerFunc {
 		ctx.Type = ctxs.ServerTypeHTTP
 		defer ctx.Put()
 
-		a.do(ctx, a.preHand)
-
-		a.do(ctx, h)
+		if a.do(ctx, a.preHand) {
+			a.do(ctx, h)
+		}
 		return
 	}
 }
 
-func (a *ApiServer) do(ctx *ctxs.Context, handler Handler) {
+func (a *ApiServer) do(ctx *ctxs.Context, handler Handler) (continueFlag bool) {
 	if handler == nil {
-		return
+		return true
 	}
 
 	if err := handler(ctx); err != nil {
 		ctx.Log.Error(err.Error())
 
 		if ctx.Writer.Status() != http.StatusOK {
-			return
+			return false
 		}
 
 		respMsg := defaultServerErrorMsg
@@ -126,8 +126,9 @@ func (a *ApiServer) do(ctx *ctxs.Context, handler Handler) {
 			respMsg = err.Error()
 		}
 		ctx.JSON(http.StatusInternalServerError, respMsg)
-		return
+		return false
 	}
+	return true
 }
 
 func (a *ApiServer) GetRouter(router string, method string) func(*ctxs.Context) error {
