@@ -4,6 +4,7 @@ import (
 	"context"
 	"reflect"
 	"runtime"
+	ssync "sync"
 	"time"
 
 	"github.com/champly/hercules/ctxs"
@@ -55,7 +56,7 @@ func (m *MQServer) getRouter(routers []servers.Router) {
 }
 
 func (m *MQServer) startServer() {
-	wg := sync.WaitGroup{}
+	wg := ssync.WaitGroup{}
 	wg.Add(len(m.servers))
 	for queue, handler := range m.servers {
 		go func(queue string, handler func(*ctxs.Context) error) {
