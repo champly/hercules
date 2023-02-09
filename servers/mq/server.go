@@ -11,7 +11,7 @@ import (
 	"github.com/champly/hercules/ctxs/component"
 	"github.com/champly/hercules/servers"
 	"github.com/champly/lib4go/sync"
-	"github.com/go-redis/redis/v8"
+	"github.com/redis/go-redis/v9"
 	"k8s.io/klog/v2"
 )
 

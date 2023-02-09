@@ -6,7 +6,7 @@ import (
 	"sync"
 
 	"github.com/champly/hercules/configs"
-	"github.com/go-redis/redis/v8"
+	"github.com/redis/go-redis/v9"
 	"k8s.io/klog/v2"
 )
 
