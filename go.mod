@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/champly/lib4go v0.0.0-20201127070907-d7500712d41d
-	github.com/gin-gonic/gin v1.7.2
+	github.com/gin-gonic/gin v1.7.7
 	github.com/google/gops v0.3.13-0.20200910081257-5d514cabbb21
 	github.com/redis/go-redis/v9 v9.0.2
 	github.com/robfig/cron v1.2.0
