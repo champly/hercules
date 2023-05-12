@@ -1,5 +1,3 @@
-//+build !debug
-
 package initialize
 
 import (
@@ -15,5 +13,4 @@ func Setpprof() {
 	}); err != nil {
 		log.Fatal(err)
 	}
-	return
 }

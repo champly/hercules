@@ -29,7 +29,6 @@ func (s *ServiceRegistry) API(pattern string, r interface{}) {
 	}
 
 	s.buildAPIRouterByFunc(pattern, r)
-	return
 }
 
 func (s *ServiceRegistry) Cron(pattern string, r interface{}) {
@@ -40,7 +39,6 @@ func (s *ServiceRegistry) Cron(pattern string, r interface{}) {
 	}
 
 	s.buildCronRouterByFunc(pattern, r)
-	return
 }
 
 func (s *ServiceRegistry) MQ(pattern string, r interface{}) {
@@ -51,7 +49,6 @@ func (s *ServiceRegistry) MQ(pattern string, r interface{}) {
 	}
 
 	s.buildMQRouterByFunc(pattern, r)
-	return
 }
 
 func (s *ServiceRegistry) GetRouters(st string) []servers.Router {

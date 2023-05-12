@@ -24,7 +24,6 @@ func (s *ServiceRegistry) buildCronRouterByObj(pattern string, constrObj interfa
 		}
 	}
 	s.services[configs.ServerTypeCron] = routers
-	return
 }
 
 func (s *ServiceRegistry) buildCronRouterByFunc(pattern string, f interface{}) {
@@ -34,5 +33,4 @@ func (s *ServiceRegistry) buildCronRouterByFunc(pattern string, f interface{}) {
 	}
 	routers = append(routers, servers.Router{Name: pattern, Handler: f})
 	s.services[configs.ServerTypeCron] = routers
-	return
 }

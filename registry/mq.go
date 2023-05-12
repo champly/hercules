@@ -24,7 +24,6 @@ func (s *ServiceRegistry) buildMQRouterByObj(pattern string, constrObj interface
 		}
 	}
 	s.services[configs.ServerTypeMQ] = routers
-	return
 }
 
 func (s *ServiceRegistry) buildMQRouterByFunc(pattern string, f interface{}) {
@@ -34,5 +33,4 @@ func (s *ServiceRegistry) buildMQRouterByFunc(pattern string, f interface{}) {
 	}
 	routers = append(routers, servers.Router{Name: pattern, Handler: f})
 	s.services[configs.ServerTypeMQ] = routers
-	return
 }

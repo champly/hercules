@@ -45,7 +45,6 @@ func (s *ServiceRegistry) buildAPIRouterByObj(pattern string, constrObj interfac
 		}
 	}
 	s.services[configs.ServerTypeAPI] = routers
-	return
 }
 
 func (s *ServiceRegistry) buildAPIRouterByFunc(pattern string, f interface{}) {
@@ -55,5 +54,4 @@ func (s *ServiceRegistry) buildAPIRouterByFunc(pattern string, f interface{}) {
 	}
 	routers = append(routers, servers.Router{Name: pattern, Method: configs.HttpMethodALL, Handler: f})
 	s.services[configs.ServerTypeAPI] = routers
-	return
 }

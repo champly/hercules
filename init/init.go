@@ -26,5 +26,4 @@ func initConfig() {
 	}
 
 	klog.Infof("Using config file:%s", viper.ConfigFileUsed())
-	return
 }
